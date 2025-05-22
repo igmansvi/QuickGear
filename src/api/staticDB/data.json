@@ -1,0 +1,376 @@
+{
+  "bookings": [
+    {
+      "id": 5,
+      "user_id": 2,
+      "product_id": 2,
+      "full_name": "priyanshu",
+      "email": "priyanshu@example.in",
+      "phone": "9876543211",
+      "start_date": "2025-03-05",
+      "end_date": "2025-03-10",
+      "message": "Weekend gaming session with friends",
+      "booking_date": "2025-02-26 18:30:00",
+      "status": "confirmed"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "product_id": 4,
+      "full_name": "priyanshu",
+      "email": "priyanshu@example.in",
+      "phone": "9876543211",
+      "start_date": "2025-02-19",
+      "end_date": "2025-02-23",
+      "message": "Need drone for sister's wedding shoot",
+      "booking_date": "2025-03-10 18:30:00",
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "user_id": 2,
+      "product_id": 6,
+      "full_name": "priyanshu",
+      "email": "priyanshu@example.in",
+      "phone": "9876543211",
+      "start_date": "2025-01-20",
+      "end_date": "2025-01-25",
+      "message": "Christmas decoration lighting setup",
+      "booking_date": "2025-01-15 18:30:00",
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "user_id": 3,
+      "product_id": 1,
+      "full_name": "kiran",
+      "email": "kiran@example.in",
+      "phone": "9876543212",
+      "start_date": "2024-11-06",
+      "end_date": "2024-11-08",
+      "message": "Photography project for college assignment",
+      "booking_date": "2024-11-02 18:30:00",
+      "status": "completed"
+    },
+    {
+      "id": 9,
+      "user_id": 3,
+      "product_id": 3,
+      "full_name": "kiran",
+      "email": "kiran@example.in",
+      "phone": "9876543212",
+      "start_date": "2025-01-22",
+      "end_date": "2025-01-26",
+      "message": "Birthday party DJ setup",
+      "booking_date": "2025-01-18 18:30:00",
+      "status": "confirmed"
+    },
+    {
+      "id": 10,
+      "user_id": 3,
+      "product_id": 5,
+      "full_name": "kiran",
+      "email": "kiran@example.in",
+      "phone": "9876543212",
+      "start_date": "2025-01-10",
+      "end_date": "2025-01-13",
+      "message": "Power backup for home event",
+      "booking_date": "2025-01-04 18:30:00",
+      "status": "cancelled"
+    },
+    {
+      "id": 11,
+      "user_id": 3,
+      "product_id": 7,
+      "full_name": "kiran",
+      "email": "kiran@example.in",
+      "phone": "9876543212",
+      "start_date": "2024-12-31",
+      "end_date": "2025-01-05",
+      "message": "Garden maintenance at new house",
+      "booking_date": "2024-12-24 18:30:00",
+      "status": "cancelled"
+    },
+    {
+      "id": 12,
+      "user_id": 4,
+      "product_id": 2,
+      "full_name": "varun",
+      "email": "varun@example.in",
+      "phone": "9876543213",
+      "start_date": "2024-11-07",
+      "end_date": "2024-11-11",
+      "message": "Gaming night with colleagues",
+      "booking_date": "2024-10-31 18:30:00",
+      "status": "pending"
+    },
+    {
+      "id": 13,
+      "user_id": 4,
+      "product_id": 4,
+      "full_name": "varun",
+      "email": "varun@example.in",
+      "phone": "9876543213",
+      "start_date": "2024-10-04",
+      "end_date": "2024-10-08",
+      "message": "Drone footage for travel vlog",
+      "booking_date": "2024-09-24 18:30:00",
+      "status": "completed"
+    },
+    {
+      "id": 14,
+      "user_id": 4,
+      "product_id": 6,
+      "full_name": "varun",
+      "email": "varun@example.in",
+      "phone": "9876543213",
+      "start_date": "2024-12-12",
+      "end_date": "2024-12-13",
+      "message": "Product photography lighting",
+      "booking_date": "2024-12-02 18:30:00",
+      "status": "confirmed"
+    },
+    {
+      "id": 15,
+      "user_id": 4,
+      "product_id": 1,
+      "full_name": "varun",
+      "email": "varun@example.in",
+      "phone": "9876543213",
+      "start_date": "2025-02-03",
+      "end_date": "2025-02-08",
+      "message": "Wildlife photography trip",
+      "booking_date": "2025-01-27 18:30:00",
+      "status": "cancelled"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "DSLR Camera",
+      "category": "tech",
+      "description": "Professional Canon 5D Mark IV with lens kit",
+      "price": 999.00,
+      "price_type": "day",
+      "deposit": 2500.00,
+      "status": "available",
+      "image": "/static/images/products/canon_camera_with_lens_kit.png",
+      "features": "4K Video, 30.4MP, Dual Pixel AF"
+    },
+    {
+      "id": 2,
+      "name": "PlayStation 5",
+      "category": "tech",
+      "description": "Gaming console with 2 controllers and 3 games",
+      "price": 499.00,
+      "price_type": "day",
+      "deposit": 1500.00,
+      "status": "coming_soon",
+      "image": "/static/images/products/ps5_with_controller.png",
+      "features": "2 Controllers, 3 Games Included, 4K Gaming"
+    },
+    {
+      "id": 3,
+      "name": "Professional DJ Setup",
+      "category": "events",
+      "description": "Complete DJ system with speakers and lights",
+      "price": 2500.00,
+      "price_type": "day",
+      "deposit": 5500.00,
+      "status": "available",
+      "image": "/static/images/products/professional_dj_setup_with_lights_and_speakers.png",
+      "features": "2000W Speakers, DMX Lights, Pioneer Controller"
+    },
+    {
+      "id": 4,
+      "name": "Drone with 4K Camera",
+      "category": "tech",
+      "description": "DJI Mavic Air 2 with extra batteries",
+      "price": 1500.00,
+      "price_type": "day",
+      "deposit": 2000.00,
+      "status": "rented",
+      "image": "/static/images/products/drone_with_extra_batteries.png",
+      "features": "4K 60fps, 48MP Photos, 34min Flight Time"
+    },
+    {
+      "id": 5,
+      "name": "Power Generator",
+      "category": "tools",
+      "description": "5500W Portable Generator",
+      "price": 800.00,
+      "price_type": "day",
+      "deposit": 2100.00,
+      "status": "available",
+      "image": "/static/images/products/portable_generator.png",
+      "features": "5500W Output, Low Noise, Fuel Efficient"
+    },
+    {
+      "id": 6,
+      "name": "Professional Lighting Kit",
+      "category": "events",
+      "description": "Studio lighting setup with softboxes",
+      "price": 1200.00,
+      "price_type": "day",
+      "deposit": 3000.00,
+      "status": "coming_soon",
+      "image": "/static/images/products/professional_studio_light_with_soft_lights.png",
+      "features": "3-Point Setup, LED Panels, Wireless Control"
+    },
+    {
+      "id": 7,
+      "name": "Heavy Duty Lawn Mower",
+      "category": "tools",
+      "description": "Professional grade gas-powered mower",
+      "price": 600.00,
+      "price_type": "day",
+      "deposit": 1200.00,
+      "status": "available",
+      "image": "/static/images/products/heavy_duty_lawn_mower.png",
+      "features": "Self-Propelled, 21-inch Deck, Mulching Capable"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "booking_id": 13,
+      "user_id": 4,
+      "product_id": 4,
+      "rating": 3,
+      "review_text": "Thanks, Good Product btw!",
+      "created_at": "2025-04-11 07:51:00"
+    },
+    {
+      "id": 2,
+      "booking_id": 8,
+      "user_id": 3,
+      "product_id": 1,
+      "rating": 4,
+      "review_text": "Loved it :>)",
+      "created_at": "2025-04-11 08:13:38"
+    },
+    {
+      "id": 3,
+      "booking_id": 15,
+      "user_id": 4,
+      "product_id": 1,
+      "rating": 5,
+      "review_text": "Excellent camera quality, perfect for my wildlife photos!",
+      "created_at": "2025-02-10 14:22:15"
+    },
+    {
+      "id": 4,
+      "booking_id": 5,
+      "user_id": 2,
+      "product_id": 2,
+      "rating": 5,
+      "review_text": "Gaming weekend was a blast with the PS5, controllers worked perfectly",
+      "created_at": "2025-03-12 09:45:12"
+    },
+    {
+      "id": 5,
+      "booking_id": 12,
+      "user_id": 4,
+      "product_id": 2,
+      "rating": 4,
+      "review_text": "Great console! One controller had low battery life though.",
+      "created_at": "2024-11-13 16:30:45"
+    },
+    {
+      "id": 6,
+      "booking_id": 9,
+      "user_id": 3,
+      "product_id": 3,
+      "rating": 5,
+      "review_text": "DJ setup made our party unforgettable! Sound quality was amazing.",
+      "created_at": "2025-01-28 20:15:33"
+    },
+    {
+      "id": 7,
+      "booking_id": 6,
+      "user_id": 2,
+      "product_id": 4,
+      "rating": 4,
+      "review_text": "Drone worked well for our wedding shoot. Battery life as advertised.",
+      "created_at": "2025-02-25 11:20:18"
+    },
+    {
+      "id": 8,
+      "booking_id": 10,
+      "user_id": 3,
+      "product_id": 5,
+      "rating": 3,
+      "review_text": "Generator did the job but was quite noisy. Fuel efficiency was good though.",
+      "created_at": "2025-01-15 13:42:50"
+    },
+    {
+      "id": 9,
+      "booking_id": 14,
+      "user_id": 4,
+      "product_id": 6,
+      "rating": 5,
+      "review_text": "Professional lighting made my product photos look amazing! Easy setup.",
+      "created_at": "2024-12-15 09:30:22"
+    },
+    {
+      "id": 10,
+      "booking_id": 7,
+      "user_id": 2,
+      "product_id": 6,
+      "rating": 4,
+      "review_text": "Great lighting setup. Wireless control was very convenient.",
+      "created_at": "2025-01-26 18:10:40"
+    },
+    {
+      "id": 11,
+      "booking_id": 11,
+      "user_id": 3,
+      "product_id": 7,
+      "rating": 4,
+      "review_text": "Lawn mower was powerful and easy to use. Made quick work of our yard.",
+      "created_at": "2025-01-06 15:25:10"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "full_name": "m4vi",
+      "email": "admin@quickgear.in",
+      "password": "m4vi01",
+      "phone": null,
+      "role": "admin",
+      "created_at": "2024-12-31 18:30:00",
+      "updated_at": "2024-12-31 18:30:00"
+    },
+    {
+      "id": 2,
+      "full_name": "Priyanshu",
+      "email": "priyanshu@example.in",
+      "password": "pass123",
+      "phone": "9876543211",
+      "role": "user",
+      "created_at": "2025-03-31 12:47:05",
+      "updated_at": "2025-04-11 08:36:54"
+    },
+    {
+      "id": 3,
+      "full_name": "Kiran",
+      "email": "kiran@example.in",
+      "password": "pass123",
+      "phone": "9876543212",
+      "role": "user",
+      "created_at": "2025-03-31 12:47:05",
+      "updated_at": "2025-04-11 08:25:42"
+    },
+    {
+      "id": 4,
+      "full_name": "Varun",
+      "email": "varun@example.in",
+      "password": "pass123",
+      "phone": "9876543213",
+      "role": "user",
+      "created_at": "2025-03-31 12:47:05",
+      "updated_at": "2025-04-11 08:26:07"
+    }
+  ]
+}
