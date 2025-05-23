@@ -20,45 +20,83 @@ const UserDetailsModal = ({ user, userDetails, onClose }) => {
   };
 
   return (
-    <AdminModal title="User Details" onClose={onClose} size="md">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="space-y-2">
-          <p>
-            <span className="font-semibold">Name:</span> {user.full_name}
-          </p>
-          <p>
-            <span className="font-semibold">Email:</span> {user.email}
-          </p>
-          <p>
-            <span className="font-semibold">Phone:</span> {user.phone || "N/A"}
-          </p>
-          <p>
-            <span className="font-semibold">Join Date:</span>{" "}
-            {new Date(user.created_at).toLocaleDateString()}
-          </p>
+    <AdminModal onClose={onClose} size="md">
+      <div className="text-center mb-6">
+        <div className="mx-auto rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mb-4">
+          <i className="fas fa-user text-blue-500 text-3xl"></i>
         </div>
-        <div className="space-y-2">
-          <p>
-            <span className="font-semibold">Total Bookings:</span>{" "}
-            {stats?.total_bookings || 0}
-          </p>
-          <p>
-            <span className="font-semibold">Completed Bookings:</span>{" "}
-            {stats?.completed_bookings || 0}
-          </p>
-          <p>
-            <span className="font-semibold">Cancelled Bookings:</span>{" "}
-            {stats?.cancelled_bookings || 0}
-          </p>
-          <p>
-            <span className="font-semibold">Total Spent:</span> ₹
-            {(stats?.total_spent || 0).toLocaleString()}
-          </p>
+        <h2 className="text-2xl font-bold mb-2">{user.full_name}</h2>
+        <p className="text-gray-600 mb-2">{user.email}</p>
+        <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+          {user.role || "User"}
         </div>
       </div>
-      <div className="mt-4">
-        <h4 className="font-semibold mb-2">Recent Bookings</h4>
-        <div className="max-h-60 overflow-y-auto border rounded-lg">
+
+      <div className="bg-gray-50 rounded-xl p-4 mb-6">
+        <h3 className="text-sm uppercase tracking-wide text-gray-500 font-medium mb-3">
+          User Information
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white p-3 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500 mb-1">Email</div>
+            <div className="font-medium text-gray-800">{user.email}</div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500 mb-1">Phone</div>
+            <div className="font-medium text-gray-800">
+              {user.phone || "N/A"}
+            </div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500 mb-1">Join Date</div>
+            <div className="font-medium text-gray-800">
+              {new Date(user.created_at).toLocaleDateString()}
+            </div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow-sm">
+            <div className="text-xs text-gray-500 mb-1">Status</div>
+            <div className="font-medium text-green-600">Active</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <h3 className="text-sm uppercase tracking-wide text-gray-500 font-medium mb-3">
+          Booking Statistics
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-blue-50 p-3 rounded-lg text-center">
+            <div className="text-2xl font-bold text-blue-600">
+              {stats?.total_bookings || 0}
+            </div>
+            <div className="text-xs text-gray-600">Total Bookings</div>
+          </div>
+          <div className="bg-green-50 p-3 rounded-lg text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {stats?.completed_bookings || 0}
+            </div>
+            <div className="text-xs text-gray-600">Completed</div>
+          </div>
+          <div className="bg-red-50 p-3 rounded-lg text-center">
+            <div className="text-2xl font-bold text-red-600">
+              {stats?.cancelled_bookings || 0}
+            </div>
+            <div className="text-xs text-gray-600">Cancelled</div>
+          </div>
+          <div className="bg-yellow-50 p-3 rounded-lg text-center">
+            <div className="text-2xl font-bold text-yellow-600">
+              ₹{(stats?.total_spent || 0).toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-600">Total Spent</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <h3 className="text-sm uppercase tracking-wide text-gray-500 font-medium mb-3">
+          Recent Bookings
+        </h3>
+        <div className="max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white">
           {bookings && bookings.length > 0 ? (
             bookings.map((booking, index) => (
               <div
@@ -67,8 +105,12 @@ const UserDetailsModal = ({ user, userDetails, onClose }) => {
               >
                 <div className="flex justify-between">
                   <span className="font-semibold">{booking.product_name}</span>
-                  <span className="text-sm">
-                    {new Date(booking.booking_date).toLocaleDateString()}
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs ${getStatusClass(
+                      booking.status
+                    )}`}
+                  >
+                    {booking.status}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
@@ -76,25 +118,25 @@ const UserDetailsModal = ({ user, userDetails, onClose }) => {
                     {new Date(booking.start_date).toLocaleDateString()} to{" "}
                     {new Date(booking.end_date).toLocaleDateString()}
                   </span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
-                      booking.status
-                    )}`}
-                  >
-                    {booking.status}
+                  <span className="text-gray-500">
+                    {new Date(booking.booking_date).toLocaleDateString()}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center py-4">No bookings found</p>
+            <div className="text-center py-8 text-gray-500">
+              <i className="fas fa-calendar-times text-gray-400 text-2xl mb-2"></i>
+              <p>No bookings found</p>
+            </div>
           )}
         </div>
       </div>
-      <div className="mt-6 flex justify-end">
+
+      <div className="flex justify-end">
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-300 hover:-translate-y-0.5"
         >
           Close
         </button>

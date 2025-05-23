@@ -41,28 +41,35 @@ const AdminModal = ({
   };
 
   return (
-    <div className="admin-modal-backdrop" onClick={handleBackdropClick}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={handleBackdropClick}
+    >
       <div
         ref={modalRef}
         tabIndex={-1}
-        className={`admin-modal ${sizeClasses[size]}`}
+        className={`relative bg-white rounded-xl shadow-2xl w-full ${sizeClasses[size]} flex flex-col max-h-[90vh] modal-animate-in`}
         onClick={(e) => e.stopPropagation()}
       >
-        {(title || showCloseButton) && (
-          <div className="admin-modal-header">
-            {title && <h3 className="admin-modal-title">{title}</h3>}
-            {showCloseButton && (
-              <button
-                onClick={onClose}
-                className="admin-modal-close-btn"
-                aria-label="Close modal"
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            )}
+        {title && (
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
           </div>
         )}
-        {children}
+
+        {showCloseButton && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105 z-10"
+            aria-label="Close modal"
+          >
+            <i className="fas fa-times text-gray-700"></i>
+          </button>
+        )}
+
+        <div className="p-6 overflow-y-auto scrollbar-hide flex-1">
+          {children}
+        </div>
       </div>
     </div>
   );
