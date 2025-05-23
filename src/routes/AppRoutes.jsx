@@ -77,7 +77,6 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />
             </>
