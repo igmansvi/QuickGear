@@ -68,13 +68,14 @@ const Collections = () => {
           {filteredProducts.slice(0, 8).map((product) => (
             <div
               key={product.id}
-              className="lazy-load bg-white rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-2 group"
+              onClick={handleViewDetails}
+              className="lazy-load bg-white rounded-xl overflow-hidden transition-all duration-500 hover:shadow-lg hover:-translate-y-1 group"
               data-category={product.category}
             >
               <div className="product-image relative h-52 md:h-56 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10"></div>
                 <img
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-in group-hover:scale-105"
                   src={product.image}
                   alt={product.name}
                   loading="lazy"

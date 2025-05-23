@@ -35,6 +35,7 @@ const ProductCard = ({ product }) => {
   return (
     <>
       <div
+        onClick={handleQuickView}
         className="bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-transparent group"
         data-category={product.category}
         data-status={product.status}
