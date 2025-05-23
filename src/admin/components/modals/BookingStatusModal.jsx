@@ -27,7 +27,7 @@ const BookingStatusModal = ({ booking, onClose, onUpdate }) => {
   return (
     <AdminModal title="Update Booking Status" onClose={onClose} size="sm">
       <div className="text-center mb-6">
-        <div className="mx-auto rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mb-4">
+        <div className="mx-auto rounded-full bg-gradient-to-r from-blue-50 to-blue-100 w-16 h-16 flex items-center justify-center mb-4 shadow-inner">
           <i className="fas fa-calendar-alt text-blue-500 text-3xl"></i>
         </div>
         <h3 className="text-xl font-bold mb-2">Booking #{booking.id}</h3>
@@ -39,7 +39,7 @@ const BookingStatusModal = ({ booking, onClose, onUpdate }) => {
           <label className="block text-gray-700 font-medium mb-2">
             Current Status
           </label>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-center justify-center">
+          <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg flex items-center justify-center shadow-inner">
             <span
               className={`px-3 py-1.5 rounded-full text-sm font-semibold ${getStatusClass(
                 booking.status
@@ -57,7 +57,7 @@ const BookingStatusModal = ({ booking, onClose, onUpdate }) => {
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
           >
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
@@ -66,17 +66,17 @@ const BookingStatusModal = ({ booking, onClose, onUpdate }) => {
           </select>
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-3 pt-4 mt-2">
           <button
             type="button"
             onClick={onClose}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2.5 px-5 rounded-lg transition-colors duration-300"
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2.5 px-5 rounded-lg transition-colors duration-300 border border-gray-300 shadow-sm hover:shadow"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-300 hover:-translate-y-0.5"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-300 hover:-translate-y-0.5 shadow-md hover:shadow-lg"
           >
             <i className="fas fa-check mr-2"></i> Update Status
           </button>

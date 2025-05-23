@@ -2,7 +2,7 @@ import React from "react";
 
 const ErrorDisplay = ({ message, onRetry }) => {
   return (
-    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg my-4 flex items-start">
+    <div className="bg-gradient-to-r from-red-50 to-white p-4 rounded-lg my-4 flex items-start shadow-md">
       <div className="flex-shrink-0 pt-0.5">
         <i className="fas fa-exclamation-circle text-red-500 text-xl"></i>
       </div>
@@ -12,7 +12,7 @@ const ErrorDisplay = ({ message, onRetry }) => {
         {onRetry && (
           <button
             onClick={onRetry}
-            className="mt-2 bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-lg font-medium transition-colors duration-300"
+            className="mt-2 bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 text-red-800 px-4 py-2 rounded-lg font-medium transition-colors duration-300 shadow-sm hover:shadow"
           >
             <i className="fas fa-sync-alt mr-2"></i> Retry
           </button>

@@ -45,7 +45,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
   return (
     <AdminModal title="Add New Product" onClose={onClose} size="md">
       <div className="text-center mb-6">
-        <div className="mx-auto rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mb-4">
+        <div className="mx-auto rounded-full bg-gradient-to-r from-blue-50 to-blue-100 w-16 h-16 flex items-center justify-center mb-4 shadow-inner">
           <i className="fas fa-box-open text-blue-500 text-3xl"></i>
         </div>
         <h3 className="text-xl font-bold mb-2">New Product</h3>
@@ -63,7 +63,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="name"
               value={newProduct.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
               required
             />
           </div>
@@ -76,7 +76,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="category"
               value={newProduct.category}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
               required
             >
               <option value="">Select Category</option>
@@ -100,7 +100,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, category: e.target.value })
                 }
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
                 required
               />
             </div>
@@ -115,7 +115,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="price"
               value={newProduct.price}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
               min="0"
               required
             />
@@ -129,7 +129,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="price_type"
               value={newProduct.price_type}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
             >
               <option value="day">Per Day</option>
               <option value="hour">Per Hour</option>
@@ -147,7 +147,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="deposit"
               value={newProduct.deposit}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
               min="0"
             />
           </div>
@@ -160,7 +160,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="status"
               value={newProduct.status}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
             >
               <option value="available">Available</option>
               <option value="coming_soon">Coming Soon</option>
@@ -176,7 +176,7 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="features"
               value={newProduct.features}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 shadow-sm"
               placeholder="e.g. Lightweight, Portable, High Resolution"
             />
           </div>
@@ -189,23 +189,23 @@ const AddProductModal = ({ categories, onClose, onSave }) => {
               name="description"
               value={newProduct.description}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700 resize-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 resize-none shadow-sm"
               rows="3"
             ></textarea>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+        <div className="flex justify-end gap-3 pt-4 mt-4">
           <button
             type="button"
             onClick={onClose}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2.5 px-5 rounded-lg transition-colors duration-300"
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2.5 px-5 rounded-lg transition-colors duration-300 border border-gray-300 shadow-sm hover:shadow"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-300 hover:-translate-y-0.5"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-300 hover:-translate-y-0.5 shadow-md hover:shadow-lg"
           >
             <i className="fas fa-plus-circle mr-2"></i> Add Product
           </button>
