@@ -29,7 +29,7 @@ const AppRoutes = () => {
         />
 
         <Route
-          path="/"
+          path="*"
           element={
             <>
               <Header />
@@ -77,6 +77,7 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />
             </>
