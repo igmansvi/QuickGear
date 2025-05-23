@@ -21,7 +21,7 @@ const ErrorDisplay = ({ message, onRetry }) => {
         {onRetry && (
           <button
             onClick={onRetry}
-            className="mt-1 bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 text-red-800 px-5 py-2 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow hover:-translate-y-0.5 flex items-center w-auto inline-flex"
+            className="mt-1 bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 text-red-800 px-5 py-2 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow hover:-translate-y-0.5 items-center w-auto inline-flex"
           >
             <i className="fas fa-sync-alt mr-2 animate-spin-slow"></i> Retry
           </button>

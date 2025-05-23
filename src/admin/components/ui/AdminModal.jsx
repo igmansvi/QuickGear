@@ -55,7 +55,7 @@ const AdminModal = ({
 
         {title && (
           <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white flex items-center">
-            <h3 className="text-xl font-semibold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-blue-600">
+            <h3 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-blue-600">
               {title}
             </h3>
             <div className="w-8 h-1 ml-4 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
