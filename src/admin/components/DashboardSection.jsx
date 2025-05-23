@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import StatCard from "./ui/StatCard";
 import StatCardSkeleton from "./ui/StatCardSkeleton";
 import { Line, Bar } from "react-chartjs-2";
+import AdminApiService from "../api/AdminApiService";
 
 const DashboardSection = ({
   stats,
@@ -11,17 +12,34 @@ const DashboardSection = ({
   bookings = [],
   users = [],
   loading,
+  onNotification = () => {},
 }) => {
-  const getExportData = () => {
-    return {
-      products: products.length,
-      bookings: bookings.length,
-      users: users.length,
-      exported_at: new Date().toISOString(),
-    };
+  const [exportLoading, setExportLoading] = useState(false);
+
+  const handleExportReport = async () => {
+    try {
+      setExportLoading(true);
+
+      const exportData = await AdminApiService.analytics.exportReports({
+        products: products.length,
+        bookings: bookings.length,
+        users: users.length,
+      });
+
+      AdminApiService.utils.downloadJsonFile(
+        exportData,
+        "quickgear_reports.json"
+      );
+
+      onNotification("Report exported successfully", "success");
+    } catch (error) {
+      console.error("Error exporting report:", error);
+      onNotification("Failed to export report", "error");
+    } finally {
+      setExportLoading(false);
+    }
   };
 
-  // Chart.js configurations
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -151,24 +169,20 @@ const DashboardSection = ({
           </button>
           <button
             className="p-4 bg-green-50 hover:bg-green-100 rounded-lg flex flex-col items-center transition duration-300 hover:shadow-md"
-            onClick={() => {
-              const exportData = getExportData();
-              const dataStr =
-                "data:text/json;charset=utf-8," +
-                encodeURIComponent(JSON.stringify(exportData, null, 2));
-              const downloadAnchorNode = document.createElement("a");
-              downloadAnchorNode.setAttribute("href", dataStr);
-              downloadAnchorNode.setAttribute(
-                "download",
-                "quickgear_reports.json"
-              );
-              document.body.appendChild(downloadAnchorNode);
-              downloadAnchorNode.click();
-              downloadAnchorNode.remove();
-            }}
+            onClick={handleExportReport}
+            disabled={exportLoading}
           >
-            <i className="fas fa-file-export text-green-500 text-2xl mb-2"></i>
-            <span className="text-gray-700">Export Reports</span>
+            {exportLoading ? (
+              <>
+                <i className="fas fa-spinner fa-spin text-green-500 text-2xl mb-2"></i>
+                <span className="text-gray-700">Exporting...</span>
+              </>
+            ) : (
+              <>
+                <i className="fas fa-file-export text-green-500 text-2xl mb-2"></i>
+                <span className="text-gray-700">Export Reports</span>
+              </>
+            )}
           </button>
           <button
             onClick={() => document.getElementById("tab-settings")?.click()}

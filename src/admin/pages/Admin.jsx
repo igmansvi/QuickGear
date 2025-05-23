@@ -291,6 +291,7 @@ const Admin = () => {
             products={products}
             bookings={bookings}
             users={users}
+            onNotification={addNotification}
           />
         </div>
 

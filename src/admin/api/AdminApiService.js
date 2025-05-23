@@ -473,6 +473,39 @@ const AdminApiService = {
 
       return popularProducts;
     },
+
+    exportReports: async (data) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const exportData = {
+        products: data.products || 0,
+        bookings: data.bookings || 0,
+        users: data.users || 0,
+        exported_at: new Date().toISOString(),
+        report_type: "summary",
+        generated_by: "admin",
+      };
+
+      console.log("Generating report:", exportData);
+
+      return exportData;
+    },
+  },
+
+  utils: {
+    downloadJsonFile: (data, filename = "export.json") => {
+      const dataStr =
+        "data:text/json;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(data, null, 2));
+      const downloadAnchorNode = document.createElement("a");
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", filename);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+
+      return true;
+    },
   },
 };
 
