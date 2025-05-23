@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import StatCard from "./ui/StatCard";
 
 const BookingsSection = ({
   bookings,
@@ -98,26 +99,50 @@ const BookingsSection = ({
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading bookings...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <div className="flex flex-wrap gap-4 mb-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          Booking Management
+        </h2>
+        <p className="text-gray-600">
+          Track and manage all bookings from your customers
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
         <div className="flex-1 min-w-[200px]">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by product or user..."
-            className="w-full border rounded-lg px-3 py-2"
-          />
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
+              <i className="fas fa-search"></i>
+            </span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by product or user..."
+              className="w-full border rounded-lg pl-10 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border rounded-lg px-3 py-2"
+            className="border rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none pl-8 pr-10 bg-no-repeat bg-[right_0.5rem_center] bg-[length:1.5em_1.5em]"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+            }}
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
@@ -125,116 +150,177 @@ const BookingsSection = ({
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="border rounded-lg px-3 py-2"
-            placeholder="From Date"
-          />
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="border rounded-lg px-3 py-2"
-            placeholder="To Date"
-          />
+
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
+              <i className="fas fa-calendar-alt"></i>
+            </span>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="border rounded-lg pl-10 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="From Date"
+            />
+          </div>
+
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
+              <i className="fas fa-calendar-alt"></i>
+            </span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="border rounded-lg pl-10 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="To Date"
+            />
+          </div>
+
           <button
             onClick={filterBookings}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2.5 rounded-lg transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow flex items-center"
           >
-            Apply Filters
+            <i className="fas fa-filter mr-2"></i> Apply
           </button>
+
           <button
             onClick={resetFilters}
-            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+            className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2.5 rounded-lg transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow flex items-center"
           >
-            Reset
+            <i className="fas fa-sync-alt mr-2"></i> Reset
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <p className="text-sm text-blue-600">Total Bookings</p>
-          <p className="text-xl font-bold">{bookingStats.total}</p>
-        </div>
-        <div className="bg-yellow-50 p-3 rounded-lg">
-          <p className="text-sm text-yellow-600">Pending</p>
-          <p className="text-xl font-bold">{bookingStats.pending}</p>
-        </div>
-        <div className="bg-green-50 p-3 rounded-lg">
-          <p className="text-sm text-green-600">Completed</p>
-          <p className="text-xl font-bold">{bookingStats.completed}</p>
-        </div>
-        <div className="bg-red-50 p-3 rounded-lg">
-          <p className="text-sm text-red-600">Cancelled</p>
-          <p className="text-xl font-bold">{bookingStats.cancelled}</p>
-        </div>
+        <StatCard
+          title="Total Bookings"
+          value={bookingStats.total}
+          icon="fa-calendar"
+          bgClass="bg-blue-100"
+          iconColor="text-blue-600"
+        />
+        <StatCard
+          title="Pending"
+          value={bookingStats.pending}
+          icon="fa-clock"
+          bgClass="bg-yellow-100"
+          iconColor="text-yellow-600"
+        />
+        <StatCard
+          title="Completed"
+          value={bookingStats.completed}
+          icon="fa-check-circle"
+          bgClass="bg-green-100"
+          iconColor="text-green-600"
+        />
+        <StatCard
+          title="Cancelled"
+          value={bookingStats.cancelled}
+          icon="fa-ban"
+          bgClass="bg-red-100"
+          iconColor="text-red-600"
+        />
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border">
-          <thead className="bg-gray-200">
+      <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+        <table className="min-w-full bg-white">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600">
             <tr>
-              <th className="py-2 px-4 border">ID</th>
-              <th className="py-2 px-4 border">Product</th>
-              <th className="py-2 px-4 border">User</th>
-              <th className="py-2 px-4 border">Rental Period</th>
-              <th className="py-2 px-4 border">Status</th>
-              <th className="py-2 px-4 border">Actions</th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                ID
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                Product
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                User
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                Rental Period
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                Status
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {filteredBookings.map((booking) => {
               const product = products.find((p) => p.id === booking.product_id);
               const user = users.find((u) => u.id === booking.user_id);
               const { rentalDays, totalAmount } = getBookingDetails(booking);
 
               return (
-                <tr key={booking.id} className="text-center hover:bg-gray-50">
-                  <td className="py-1 px-2 border">{booking.id}</td>
-                  <td className="py-1 px-2 border">
-                    {product ? product.name : "Unknown Product"}
-                    <br />
-                    <span className="text-xs text-gray-500">
-                      ₹{product ? product.price.toLocaleString() : 0}/day
-                    </span>
+                <tr
+                  key={booking.id}
+                  className="hover:bg-blue-50 transition-colors duration-150"
+                >
+                  <td className="py-3 px-4">{booking.id}</td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i
+                          className={`fas fa-${
+                            product?.category === "camera" ? "camera" : "tools"
+                          } text-gray-500`}
+                        ></i>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {product ? product.name : "Unknown Product"}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          ₹{product ? product.price.toLocaleString() : 0}/day
+                        </div>
+                      </div>
+                    </div>
                   </td>
-                  <td className="py-1 px-2 border">
-                    {user ? user.full_name : "Unknown User"}
-                    <br />
-                    <span className="text-xs text-gray-500">
-                      {user ? user.email : ""}
-                    </span>
+                  <td className="py-3 px-4">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {user ? user.full_name : "Unknown User"}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {user ? user.email : ""}
+                      </div>
+                    </div>
                   </td>
-                  <td className="py-1 px-2 border">
-                    {new Date(booking.start_date).toLocaleDateString()} to{" "}
-                    {new Date(booking.end_date).toLocaleDateString()}
-                    <br />
-                    <span className="text-xs text-gray-500">
-                      {rentalDays} days
-                    </span>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium">
+                        {new Date(booking.start_date).toLocaleDateString()} -{" "}
+                        {new Date(booking.end_date).toLocaleDateString()}
+                      </div>
+                      <div className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {rentalDays} days
+                      </div>
+                    </div>
                   </td>
-                  <td className="py-1 px-2 border">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusClass(
-                        booking.status
-                      )}`}
-                    >
-                      {booking.status}
-                    </span>
-                    <br />
-                    <span className="text-xs font-semibold text-gray-700">
-                      ₹{totalAmount.toLocaleString()}
-                    </span>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-col">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                          booking.status
+                        )}`}
+                      >
+                        {booking.status.charAt(0).toUpperCase() +
+                          booking.status.slice(1)}
+                      </span>
+                      <div className="mt-1 text-sm font-semibold text-gray-700">
+                        ₹{totalAmount.toLocaleString()}
+                      </div>
+                    </div>
                   </td>
-                  <td className="py-1 px-2 border">
+                  <td className="py-3 px-4">
                     <button
-                      className="text-blue-600 hover:text-blue-800 mx-1"
+                      className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center"
                       onClick={() => onUpdateStatus(booking)}
                     >
-                      <i className="fas fa-edit"></i> Update
+                      <i className="fas fa-edit mr-1.5"></i> Update
                     </button>
                   </td>
                 </tr>

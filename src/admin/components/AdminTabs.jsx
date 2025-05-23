@@ -10,19 +10,17 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm mb-6 overflow-x-auto sticky top-16 z-30">
+    <nav className="bg-gradient-to-r from-gray-50 to-white shadow-md mb-6 overflow-x-auto sticky top-16 z-30">
       <div className="container mx-auto">
-        <div className="flex p-4 gap-2 md:gap-4">
+        <div className="flex p-3 gap-1 md:gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`tab-btn whitespace-nowrap ${
-                activeTab === tab.id ? "active" : ""
-              }`}
+              className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
             >
-              <i className={`fas ${tab.icon} mr-2`}></i>
-              <span className="hidden sm:inline">{tab.label}</span>
+              <i className={`fas ${tab.icon}`}></i>
+              <span>{tab.label}</span>
             </button>
           ))}
         </div>
@@ -30,13 +28,17 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
 
       <style jsx="true">{`
         .tab-btn {
-          padding: 0.5rem 1rem;
+          padding: 0.625rem 1.25rem;
           color: #4b5563;
           border-radius: 0.5rem;
-          transition: all 0.2s;
+          transition: all 0.3s;
           display: flex;
           align-items: center;
-          justify-content: center;
+          gap: 0.5rem;
+          position: relative;
+          font-weight: 500;
+          font-size: 0.95rem;
+          overflow: hidden;
         }
 
         .tab-btn:hover {
@@ -45,13 +47,33 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
         }
 
         .tab-btn.active {
-          background-color: #3b82f6;
+          background-image: linear-gradient(to right, #3b82f6, #4f46e5);
           color: white;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
         }
 
         .tab-btn.active:hover {
-          background-color: #2563eb;
-          color: white;
+          background-image: linear-gradient(to right, #2563eb, #4338ca);
+          transform: translateY(-1px);
+        }
+
+        .tab-btn:active {
+          transform: translateY(1px);
+        }
+
+        @media (max-width: 640px) {
+          .tab-btn {
+            padding: 0.5rem 0.75rem;
+          }
+
+          .tab-btn span {
+            display: none;
+          }
+
+          .tab-btn i {
+            font-size: 1.25rem;
+            margin: 0;
+          }
         }
       `}</style>
     </nav>
