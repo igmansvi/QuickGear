@@ -19,9 +19,12 @@ import DashboardSection from "../components/DashboardSection";
 import ProductsSection from "../components/ProductsSection";
 import BookingsSection from "../components/BookingsSection";
 import UsersSection from "../components/UsersSection";
+import SettingsSection from "../components/SettingsSection";
 import ProductEditModal from "../components/modals/ProductEditModal";
 import BookingStatusModal from "../components/modals/BookingStatusModal";
 import UserDetailsModal from "../components/modals/UserDetailsModal";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import ErrorDisplay from "../components/ui/ErrorDisplay";
 
 ChartJS.register(
   CategoryScale,
@@ -42,6 +45,7 @@ const Admin = () => {
   const [bookings, setBookings] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({});
   const [chartData, setChartData] = useState({
     bookingTrends: { labels: [], counts: [] },
@@ -57,6 +61,7 @@ const Admin = () => {
   const [userDetails, setUserDetails] = useState(null);
 
   const [notifications, setNotifications] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     if (isAuthenticated && user && user.role !== "admin") {
@@ -65,10 +70,11 @@ const Admin = () => {
     }
 
     fetchAllData();
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, refreshTrigger]);
 
   const fetchAllData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const productsData = await AdminApiService.products.getAll();
       setProducts(productsData);
@@ -86,6 +92,7 @@ const Admin = () => {
       setChartData(charts);
     } catch (error) {
       console.error("Error fetching admin data:", error);
+      setError("Failed to load dashboard data. Please try again later.");
       addNotification("Error loading data", "error");
     } finally {
       setLoading(false);
@@ -104,6 +111,7 @@ const Admin = () => {
       );
       setProductModalOpen(false);
       addNotification("Product updated successfully", "success");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       console.error("Error updating product:", error);
       addNotification("Error updating product", "error");
@@ -120,6 +128,7 @@ const Admin = () => {
       );
       setBookingModalOpen(false);
       addNotification("Booking status updated successfully", "success");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       console.error("Error updating booking status:", error);
       addNotification("Error updating booking status", "error");
@@ -135,6 +144,11 @@ const Admin = () => {
       console.error("Error fetching user details:", error);
       addNotification("Error loading user details", "error");
     }
+  };
+
+  const handleRefreshData = () => {
+    addNotification("Refreshing data...", "info");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const addNotification = (message, type = "info") => {
@@ -154,7 +168,10 @@ const Admin = () => {
 
   return (
     <div className="font-sans bg-gray-50 min-h-screen">
-      <AdminHeader username={user?.full_name || "Admin"} />
+      <AdminHeader
+        username={user?.full_name || "Admin"}
+        onRefresh={handleRefreshData}
+      />
 
       <AdminTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
@@ -188,6 +205,8 @@ const Admin = () => {
             </div>
           ))}
         </div>
+
+        {error && <ErrorDisplay message={error} onRetry={fetchAllData} />}
 
         {/* Dashboard Tab */}
         <div
@@ -253,7 +272,20 @@ const Admin = () => {
             }}
           />
         </div>
+
+        {/* Settings Tab */}
+        <div
+          id="tab-settings"
+          className={`tab-content ${
+            activeTab !== "tab-settings" ? "hidden" : ""
+          }`}
+        >
+          <SettingsSection adminUser={user} onNotification={addNotification} />
+        </div>
       </main>
+
+      {/* Global loading overlay for major operations */}
+      {loading && <LoadingOverlay />}
 
       {/* Modals */}
       {productModalOpen && selectedProduct && (

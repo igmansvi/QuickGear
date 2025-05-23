@@ -1,40 +1,30 @@
 import React from "react";
 
 const AdminTabs = ({ activeTab, onTabChange }) => {
+  const tabs = [
+    { id: "tab-dashboard", label: "Dashboard", icon: "fa-chart-line" },
+    { id: "tab-products", label: "Products", icon: "fa-box" },
+    { id: "tab-bookings", label: "Bookings", icon: "fa-calendar-check" },
+    { id: "tab-users", label: "Users", icon: "fa-users" },
+    { id: "tab-settings", label: "Settings", icon: "fa-cog" },
+  ];
+
   return (
-    <nav className="bg-white shadow-sm mb-6">
+    <nav className="bg-white shadow-sm mb-6 overflow-x-auto sticky top-16 z-30">
       <div className="container mx-auto">
-        <div className="flex gap-4 p-4">
-          <button
-            onClick={() => onTabChange("tab-dashboard")}
-            className={`tab-btn ${
-              activeTab === "tab-dashboard" ? "active" : ""
-            }`}
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => onTabChange("tab-products")}
-            className={`tab-btn ${
-              activeTab === "tab-products" ? "active" : ""
-            }`}
-          >
-            Products
-          </button>
-          <button
-            onClick={() => onTabChange("tab-bookings")}
-            className={`tab-btn ${
-              activeTab === "tab-bookings" ? "active" : ""
-            }`}
-          >
-            Bookings
-          </button>
-          <button
-            onClick={() => onTabChange("tab-users")}
-            className={`tab-btn ${activeTab === "tab-users" ? "active" : ""}`}
-          >
-            Users
-          </button>
+        <div className="flex p-4 gap-2 md:gap-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`tab-btn whitespace-nowrap ${
+                activeTab === tab.id ? "active" : ""
+              }`}
+            >
+              <i className={`fas ${tab.icon} mr-2`}></i>
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -44,6 +34,9 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
           color: #4b5563;
           border-radius: 0.5rem;
           transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .tab-btn:hover {
