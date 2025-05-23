@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 :root {
   --color-primary: #f3c614;
   --color-secondary: #e6b400;
