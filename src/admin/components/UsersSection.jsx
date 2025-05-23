@@ -38,11 +38,14 @@ const UsersSection = ({ users, loading, onViewDetails, onUpdateStatus }) => {
 
   const userStats = {
     total: filteredUsers.length,
-    active: filteredUsers.length,
+    active:
+      filteredUsers.filter((user) => user.status === "active").length || 0,
     newUsers: Math.floor(filteredUsers.length * 0.3),
   };
 
   const handleStatusChange = (user, newStatus) => {
+    if (user.status === newStatus) return;
+
     setStatusModal({
       isOpen: true,
       user,
@@ -158,7 +161,7 @@ const UsersSection = ({ users, loading, onViewDetails, onUpdateStatus }) => {
       </div>
 
       {/* User Status Confirmation Modal */}
-      {statusModal.isOpen && (
+      {statusModal.isOpen && statusModal.user && (
         <UserStatusConfirmation
           user={statusModal.user}
           newStatus={statusModal.newStatus}
