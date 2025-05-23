@@ -29,9 +29,13 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate(from);
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -121,8 +125,6 @@ const Login = () => {
       } else {
         localStorage.removeItem("quickGearUserEmail");
       }
-
-      navigate(from, { replace: true });
     } catch (error) {
       setFormErrors({
         ...formErrors,

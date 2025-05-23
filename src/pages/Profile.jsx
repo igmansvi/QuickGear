@@ -5,6 +5,7 @@ import { useProducts } from "../context/ProductContext";
 import ProfileForm from "../components/profile/ProfileForm";
 import UserBookings from "../components/profile/UserBookings";
 import AlertMessage from "../components/profile/AlertMessage";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const [userBookings, setUserBookings] = useState([]);
@@ -125,6 +126,17 @@ const Profile = () => {
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
             Manage your profile information and view your rental history
           </p>
+          {user && user.role === "admin" && (
+            <div className="mt-4">
+              <Link
+                to="/admin"
+                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+              >
+                <i className="fas fa-user-shield mr-2"></i>
+                Access Admin Panel
+              </Link>
+            </div>
+          )}
         </div>
 
         {message && <AlertMessage type={message.type} message={message.text} />}

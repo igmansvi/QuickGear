@@ -38,7 +38,7 @@ ChartJS.register(
 );
 
 const Admin = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("tab-dashboard");
   const [products, setProducts] = useState([]);
@@ -64,13 +64,13 @@ const Admin = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    if (isAuthenticated && user && user.role !== "admin") {
+    if (!isAuthenticated || !isAdmin()) {
       navigate("/");
       return;
     }
 
     fetchAllData();
-  }, [isAuthenticated, user, navigate, refreshTrigger]);
+  }, [isAuthenticated, isAdmin, navigate, refreshTrigger]);
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -162,7 +162,7 @@ const Admin = () => {
     }, 5000);
   };
 
-  if (!isAuthenticated || (user && user.role !== "admin")) {
+  if (!isAuthenticated || !isAdmin()) {
     return <div>Access denied. Redirecting...</div>;
   }
 
