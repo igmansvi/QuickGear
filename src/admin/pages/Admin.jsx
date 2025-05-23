@@ -151,6 +151,17 @@ const Admin = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleAddProduct = async (productData) => {
+    try {
+      await AdminApiService.products.add(productData);
+      addNotification("Product added successfully", "success");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error adding product:", error);
+      addNotification("Error adding product", "error");
+    }
+  };
+
   const addNotification = (message, type = "info") => {
     const id = Date.now();
     setNotifications([...notifications, { id, message, type }]);
@@ -236,6 +247,7 @@ const Admin = () => {
               setSelectedProduct(product);
               setProductModalOpen(true);
             }}
+            onAddProduct={handleAddProduct}
           />
         </div>
 
