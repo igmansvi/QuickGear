@@ -175,6 +175,22 @@ const AdminApiService = {
       console.log(`Admin - Deleting product with ID: ${productId}`);
       return { success: true, message: "Product deleted successfully" };
     },
+
+    getProductWithConfirmation: async (productId) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const product = data.products.find((p) => p.id === parseInt(productId));
+      if (!product) {
+        throw new Error("Product not found");
+      }
+      return {
+        product,
+        confirmationDetails: {
+          title: `Delete ${product.name}`,
+          message: `Are you sure you want to delete ${product.name}? This action cannot be undone.`,
+          dangerLevel: "high",
+        },
+      };
+    },
   },
 
   bookings: {
@@ -235,6 +251,45 @@ const AdminApiService = {
       return updatedBooking;
     },
 
+    getBookingWithConfirmation: async (bookingId, newStatus) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const booking = data.bookings.find((b) => b.id === parseInt(bookingId));
+      if (!booking) {
+        throw new Error("Booking not found");
+      }
+
+      const product = data.products.find((p) => p.id === booking.product_id);
+      const productName = product ? product.name : "Unknown Product";
+
+      let confirmationType = "info";
+      let icon = "calendar-check";
+      let title = `Update Booking Status`;
+      let message = `Are you sure you want to change the status of booking #${bookingId} for ${productName} to ${newStatus}?`;
+
+      if (newStatus === "cancelled") {
+        confirmationType = "danger";
+        icon = "calendar-times";
+        title = "Cancel Booking";
+        message = `Are you sure you want to cancel booking #${bookingId} for ${productName}? The customer will be notified of this change.`;
+      } else if (newStatus === "completed") {
+        confirmationType = "success";
+        icon = "check-circle";
+        title = "Complete Booking";
+        message = `Are you sure you want to mark booking #${bookingId} for ${productName} as completed?`;
+      }
+
+      return {
+        booking,
+        confirmationDetails: {
+          title,
+          message,
+          type: confirmationType,
+          icon,
+        },
+      };
+    },
+
     getStatsByPeriod: async (startDate, endDate) => {
       await new Promise((resolve) => setTimeout(resolve, 600));
 
@@ -285,9 +340,14 @@ const AdminApiService = {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      return data.users
-        .map(({ password, ...user }) => user)
+      const usersWithStatus = data.users
+        .map(({ password, ...user }) => ({
+          ...user,
+          status: user.status || "active",
+        }))
         .filter((user) => user.role !== "admin");
+
+      return usersWithStatus;
     },
 
     getStats: async (userId) => {
@@ -348,6 +408,64 @@ const AdminApiService = {
       return {
         stats: { ...userWithoutPassword, ...stats },
         bookings: recentBookings,
+      };
+    },
+
+    updateStatus: async (userId, newStatus) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const userIndex = data.users.findIndex((u) => u.id === parseInt(userId));
+      if (userIndex === -1) {
+        throw new Error("User not found");
+      }
+
+      const updatedUser = {
+        ...data.users[userIndex],
+        status: newStatus,
+      };
+
+      console.log(`Admin - Updated user ${userId} status to ${newStatus}`);
+      return updatedUser;
+    },
+
+    getUserWithStatusConfirmation: async (userId, newStatus) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const user = data.users.find((u) => u.id === parseInt(userId));
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      let confirmationType = "info";
+      let icon = "user-edit";
+      let title = `Update User Status`;
+      let message = `Are you sure you want to change ${user.full_name}'s status to ${newStatus}?`;
+
+      if (newStatus === "banned") {
+        confirmationType = "danger";
+        icon = "user-slash";
+        title = "Ban User";
+        message = `Are you sure you want to ban ${user.full_name}'s account? This will prevent them from logging in and making bookings.`;
+      } else if (newStatus === "suspended") {
+        confirmationType = "warning";
+        icon = "user-clock";
+        title = "Suspend User";
+        message = `Are you sure you want to suspend ${user.full_name}'s account? They will not be able to make new bookings until reinstated.`;
+      } else if (newStatus === "active") {
+        confirmationType = "success";
+        icon = "user-check";
+        title = "Activate User";
+        message = `Are you sure you want to activate ${user.full_name}'s account? They will have full access to the platform.`;
+      }
+
+      return {
+        user,
+        confirmationDetails: {
+          title,
+          message,
+          type: confirmationType,
+          icon,
+        },
       };
     },
 
@@ -505,6 +623,71 @@ const AdminApiService = {
       downloadAnchorNode.remove();
 
       return true;
+    },
+
+    getConfirmationDetails: (type, data) => {
+      const confirmations = {
+        deleteProduct: {
+          title: `Delete ${data?.name || "Product"}`,
+          message: `Are you sure you want to delete ${
+            data?.name || "this product"
+          }? This action cannot be undone.`,
+          type: "danger",
+          icon: "trash-alt",
+          confirmText: "Delete",
+          cancelText: "Cancel",
+        },
+        updateBookingStatus: {
+          title: `Update Booking Status`,
+          message: `Are you sure you want to change the status to ${
+            data?.status || "the new status"
+          }?`,
+          type:
+            data?.status === "cancelled"
+              ? "danger"
+              : data?.status === "completed"
+              ? "success"
+              : "info",
+          icon:
+            data?.status === "cancelled"
+              ? "calendar-times"
+              : data?.status === "completed"
+              ? "calendar-check"
+              : "calendar-alt",
+          confirmText: "Update",
+          cancelText: "Cancel",
+        },
+        changeUserStatus: {
+          title: `Change User Status`,
+          message: `Are you sure you want to change this user's status to ${
+            data?.status || "the new status"
+          }?`,
+          type:
+            data?.status === "banned"
+              ? "danger"
+              : data?.status === "suspended"
+              ? "warning"
+              : "success",
+          icon:
+            data?.status === "banned"
+              ? "user-slash"
+              : data?.status === "suspended"
+              ? "user-clock"
+              : "user-check",
+          confirmText: "Confirm",
+          cancelText: "Cancel",
+        },
+        default: {
+          title: "Confirm Action",
+          message: "Are you sure you want to perform this action?",
+          type: "warning",
+          icon: "exclamation-triangle",
+          confirmText: "Confirm",
+          cancelText: "Cancel",
+        },
+      };
+
+      return confirmations[type] || confirmations.default;
     },
   },
 };

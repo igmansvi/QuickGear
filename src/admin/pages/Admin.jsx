@@ -234,6 +234,20 @@ const Admin = () => {
     }, 5000);
   };
 
+  const handleUpdateUserStatus = async (userId, newStatus) => {
+    try {
+      await AdminApiService.users.updateStatus(userId, newStatus);
+      setUsers(
+        users.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
+      );
+      addNotification(`User status updated to ${newStatus}`, "success");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      addNotification("Error updating user status", "error");
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -383,6 +397,7 @@ const Admin = () => {
               setSelectedUser(user);
               handleViewUserDetails(user.id);
             }}
+            onUpdateStatus={handleUpdateUserStatus}
           />
         </div>
 

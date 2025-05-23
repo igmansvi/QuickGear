@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
+import UserStatusConfirmation from "./modals/UserStatusConfirmation";
 
-const UsersSection = ({ users, loading, onViewDetails }) => {
+const UsersSection = ({ users, loading, onViewDetails, onUpdateStatus }) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusModal, setStatusModal] = useState({
+    isOpen: false,
+    user: null,
+    newStatus: "",
+  });
 
   useEffect(() => {
     if (users.length) {
@@ -34,6 +40,21 @@ const UsersSection = ({ users, loading, onViewDetails }) => {
     total: filteredUsers.length,
     active: filteredUsers.length,
     newUsers: Math.floor(filteredUsers.length * 0.3),
+  };
+
+  const handleStatusChange = (user, newStatus) => {
+    setStatusModal({
+      isOpen: true,
+      user,
+      newStatus,
+    });
+  };
+
+  const handleConfirmStatusChange = (userId, newStatus) => {
+    if (onUpdateStatus) {
+      onUpdateStatus(userId, newStatus);
+    }
+    setStatusModal({ isOpen: false, user: null, newStatus: "" });
   };
 
   if (loading) {
@@ -95,6 +116,7 @@ const UsersSection = ({ users, loading, onViewDetails }) => {
               <th className="py-2 px-4 border">Email</th>
               <th className="py-2 px-4 border">Phone</th>
               <th className="py-2 px-4 border">Role</th>
+              <th className="py-2 px-4 border">Status</th>
               <th className="py-2 px-4 border">Actions</th>
             </tr>
           </thead>
@@ -111,6 +133,17 @@ const UsersSection = ({ users, loading, onViewDetails }) => {
                   </span>
                 </td>
                 <td className="py-1 px-2 border">
+                  <select
+                    value={user.status || "active"}
+                    onChange={(e) => handleStatusChange(user, e.target.value)}
+                    className="text-xs rounded border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+                  >
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="banned">Banned</option>
+                  </select>
+                </td>
+                <td className="py-1 px-2 border">
                   <button
                     className="text-blue-600 hover:text-blue-800 mx-1"
                     onClick={() => onViewDetails(user)}
@@ -123,6 +156,19 @@ const UsersSection = ({ users, loading, onViewDetails }) => {
           </tbody>
         </table>
       </div>
+
+      {/* User Status Confirmation Modal */}
+      {statusModal.isOpen && (
+        <UserStatusConfirmation
+          user={statusModal.user}
+          newStatus={statusModal.newStatus}
+          isOpen={statusModal.isOpen}
+          onClose={() =>
+            setStatusModal({ isOpen: false, user: null, newStatus: "" })
+          }
+          onConfirm={handleConfirmStatusChange}
+        />
+      )}
     </div>
   );
 };
