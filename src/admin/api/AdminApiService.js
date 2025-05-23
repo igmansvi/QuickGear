@@ -610,6 +610,112 @@ const AdminApiService = {
     },
   },
 
+  notifications: {
+    createNotification: (message, type = "info") => {
+      return {
+        id: Date.now(),
+        message,
+        type,
+        timestamp: new Date().toISOString(),
+      };
+    },
+
+    getNotificationStyles: (type) => {
+      const styles = {
+        success: "bg-green-100 border-l-4 border-green-500 text-green-700",
+        error: "bg-red-100 border-l-4 border-red-500 text-red-700",
+        warning: "bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700",
+        info: "bg-blue-100 border-l-4 border-blue-500 text-blue-700",
+      };
+      return styles[type] || styles.info;
+    },
+
+    markAsRead: async (notificationId) => {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      console.log(`Notification ${notificationId} marked as read`);
+      return { success: true, message: "Notification marked as read" };
+    },
+
+    deleteNotification: async (notificationId) => {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      console.log(`Notification ${notificationId} deleted`);
+      return { success: true, message: "Notification deleted" };
+    },
+  },
+
+  modals: {
+    handleCloseAll: () => {
+      return {
+        productModal: false,
+        bookingModal: false,
+        userModal: false,
+        deleteProductModal: false,
+      };
+    },
+
+    handleOpen: (modalName) => {
+      const result = {
+        productModal: false,
+        bookingModal: false,
+        userModal: false,
+        deleteProductModal: false,
+        confirmationModal: false,
+        exportModal: false,
+      };
+
+      result[modalName] = true;
+      return result;
+    },
+
+    isOpen: (currentModals, modalName) => {
+      return currentModals && currentModals[modalName] === true;
+    },
+
+    getConfig: (modalType, data = {}) => {
+      const configs = {
+        product: {
+          title: data.id ? "Edit Product" : "Add New Product",
+          size: "lg",
+          submitLabel: data.id ? "Update Product" : "Add Product",
+          closeLabel: "Cancel",
+        },
+        booking: {
+          title: `Booking Details: #${data.id || ""}`,
+          size: "lg",
+          submitLabel: "Update Status",
+          closeLabel: "Close",
+        },
+        user: {
+          title: `User Profile: ${data.full_name || ""}`,
+          size: "lg",
+          submitLabel: "Update User",
+          closeLabel: "Close",
+        },
+        confirmation: {
+          title: data.title || "Confirm Action",
+          size: "sm",
+          submitLabel: data.confirmText || "Confirm",
+          closeLabel: data.cancelText || "Cancel",
+        },
+        export: {
+          title: "Export Data",
+          size: "md",
+          submitLabel: "Export",
+          closeLabel: "Cancel",
+        },
+      };
+
+      return (
+        configs[modalType] || {
+          title: "Modal",
+          size: "md",
+          submitLabel: "Submit",
+          closeLabel: "Close",
+        }
+      );
+    },
+  },
+
   utils: {
     downloadJsonFile: (data, filename = "export.json") => {
       const dataStr =
@@ -623,6 +729,36 @@ const AdminApiService = {
       downloadAnchorNode.remove();
 
       return true;
+    },
+
+    calculateRentalDays: (startDate, endDate) => {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+    },
+
+    calculateBookingTotal: (product, startDate, endDate) => {
+      if (!product) return 0;
+      const days = AdminApiService.utils.calculateRentalDays(
+        startDate,
+        endDate
+      );
+      return product.price * days;
+    },
+
+    getTabsConfig: () => {
+      return [
+        "tab-dashboard",
+        "tab-products",
+        "tab-bookings",
+        "tab-users",
+        "tab-settings",
+      ];
+    },
+
+    validateHash: (hash) => {
+      const validTabs = AdminApiService.utils.getTabsConfig();
+      return validTabs.includes(hash) ? hash : "tab-dashboard";
     },
 
     getConfirmationDetails: (type, data) => {
