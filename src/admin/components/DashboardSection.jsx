@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 import StatCard from "./ui/StatCard";
 import StatCardSkeleton from "./ui/StatCardSkeleton";
 import { Line, Bar } from "react-chartjs-2";
+import { Chart as ChartJS, Filler } from "chart.js";
 import AdminApiService from "../api/AdminApiService";
+
+ChartJS.register(Filler);
 
 const DashboardSection = ({
   stats,
