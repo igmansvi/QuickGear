@@ -1,181 +1,352 @@
 import React from "react";
-import { Line, Bar } from "react-chartjs-2";
+import { Link } from "react-router-dom";
 import StatCard from "./ui/StatCard";
 import StatCardSkeleton from "./ui/StatCardSkeleton";
+import { Line, Bar } from "react-chartjs-2";
 
-const DashboardSection = ({ loading, stats, chartData }) => {
-  const bookingTrendsChartData = {
-    labels: chartData.bookingTrends.labels,
-    datasets: [
-      {
-        label: "Bookings",
-        data: chartData.bookingTrends.counts,
-        borderColor: "rgb(59, 130, 246)",
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
-        tension: 0.1,
-        fill: true,
-      },
-    ],
+const DashboardSection = ({
+  stats,
+  chartData,
+  products = [],
+  bookings = [],
+  users = [],
+  loading,
+}) => {
+  const getExportData = () => {
+    return {
+      products: products.length,
+      bookings: bookings.length,
+      users: users.length,
+      exported_at: new Date().toISOString(),
+    };
   };
 
-  const revenueChartData = {
-    labels: chartData.revenue.labels,
-    datasets: [
-      {
-        label: "Revenue (₹)",
-        data: chartData.revenue.amounts,
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const chartOptions = {
+  // Chart.js configurations
+  const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
       },
-      tooltip: {
-        intersect: false,
-        mode: "index",
+      title: {
+        display: false,
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        grid: {
-          drawBorder: false,
-        },
-      },
-      x: {
-        grid: {
-          display: false,
+        ticks: {
+          precision: 0,
         },
       },
     },
   };
 
-  const chartContainerStyle = {
-    height: "300px",
-    width: "100%",
+  const barChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
   };
 
+  const lineChartData = {
+    labels: chartData?.bookingTrends?.labels || [],
+    datasets: [
+      {
+        label: "Bookings",
+        data: chartData?.bookingTrends?.counts || [],
+        borderColor: "#4f46e5",
+        backgroundColor: "rgba(79, 70, 229, 0.1)",
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+      },
+    ],
+  };
+
+  const barChartData = {
+    labels: chartData?.revenue?.labels || [],
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: chartData?.revenue?.amounts || [],
+        backgroundColor: "#84cc16",
+        borderColor: "#65a30d",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+        <div className="bg-white rounded-xl shadow p-6">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-64 bg-gray-100 rounded animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Dashboard Overview
-        </h2>
-        <p className="text-gray-600">
-          Welcome to the admin dashboard. Here's a summary of your business
-          performance.
-        </p>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Products"
+          value={stats.totalProducts}
+          icon="fa-box"
+          bgClass="bg-blue-100"
+          iconColor="text-blue-500"
+        />
+        <StatCard
+          title="Total Bookings"
+          value={stats.totalBookings}
+          icon="fa-calendar-check"
+          bgClass="bg-green-100"
+          iconColor="text-green-500"
+        />
+        <StatCard
+          title="Active Users"
+          value={stats.totalUsers}
+          icon="fa-users"
+          bgClass="bg-purple-100"
+          iconColor="text-purple-500"
+        />
+        <StatCard
+          title="Total Revenue"
+          value={`₹${stats.totalRevenue?.toLocaleString() || "0"}`}
+          icon="fa-rupee-sign"
+          bgClass="bg-yellow-100"
+          iconColor="text-yellow-600"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {loading ? (
-          // Show skeletons while loading
-          <>
-            <StatCardSkeleton />
-            <StatCardSkeleton />
-            <StatCardSkeleton />
-            <StatCardSkeleton />
-          </>
-        ) : (
-          // Show actual stat cards when data is loaded
-          <>
-            <StatCard
-              title="Revenue"
-              value={`₹${stats.totalRevenue?.toLocaleString() || 0}`}
-              icon="fa-indian-rupee-sign"
-              borderClass="border-blue-500"
-              bgClass="bg-blue-100"
-              iconColor="text-blue-500"
-            />
-            <StatCard
-              title="Total Products"
-              value={stats.totalProducts || 0}
-              icon="fa-box"
-              borderClass="border-purple-500"
-              bgClass="bg-purple-100"
-              iconColor="text-purple-500"
-            />
-            <StatCard
-              title="Total Bookings"
-              value={stats.totalBookings || 0}
-              icon="fa-calendar-check"
-              borderClass="border-green-500"
-              bgClass="bg-green-100"
-              iconColor="text-green-500"
-            />
-            <StatCard
-              title="Total Users"
-              value={stats.totalUsers || 0}
-              icon="fa-users"
-              borderClass="border-yellow-500"
-              bgClass="bg-yellow-100"
-              iconColor="text-yellow-500"
-            />
-          </>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="text-xl font-semibold mb-4">Booking Trends</h3>
-          <div style={chartContainerStyle}>
-            {loading ? (
-              <div className="h-full w-full flex items-center justify-center bg-gray-50">
-                <div className="animate-pulse text-gray-400">
-                  <i className="fas fa-chart-line text-4xl"></i>
-                </div>
-              </div>
-            ) : (
-              <Line data={bookingTrendsChartData} options={chartOptions} />
-            )}
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="text-xl font-semibold mb-4">Revenue Overview</h3>
-          <div style={chartContainerStyle}>
-            {loading ? (
-              <div className="h-full w-full flex items-center justify-center bg-gray-50">
-                <div className="animate-pulse text-gray-400">
-                  <i className="fas fa-chart-bar text-4xl"></i>
-                </div>
-              </div>
-            ) : (
-              <Bar data={revenueChartData} options={chartOptions} />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow p-6 mb-8">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
         <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg flex flex-col items-center transition duration-300">
+          <button
+            onClick={() => document.getElementById("add-product-btn")?.click()}
+            className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg flex flex-col items-center transition duration-300 hover:shadow-md"
+          >
             <i className="fas fa-plus-circle text-blue-500 text-2xl mb-2"></i>
             <span className="text-gray-700">Add New Product</span>
           </button>
-          <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg flex flex-col items-center transition duration-300">
+          <button
+            className="p-4 bg-green-50 hover:bg-green-100 rounded-lg flex flex-col items-center transition duration-300 hover:shadow-md"
+            onClick={() => {
+              const exportData = getExportData();
+              const dataStr =
+                "data:text/json;charset=utf-8," +
+                encodeURIComponent(JSON.stringify(exportData, null, 2));
+              const downloadAnchorNode = document.createElement("a");
+              downloadAnchorNode.setAttribute("href", dataStr);
+              downloadAnchorNode.setAttribute(
+                "download",
+                "quickgear_reports.json"
+              );
+              document.body.appendChild(downloadAnchorNode);
+              downloadAnchorNode.click();
+              downloadAnchorNode.remove();
+            }}
+          >
             <i className="fas fa-file-export text-green-500 text-2xl mb-2"></i>
             <span className="text-gray-700">Export Reports</span>
           </button>
-          <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg flex flex-col items-center transition duration-300">
+          <button
+            onClick={() => document.getElementById("tab-settings")?.click()}
+            className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg flex flex-col items-center transition duration-300 hover:shadow-md"
+          >
             <i className="fas fa-cog text-purple-500 text-2xl mb-2"></i>
             <span className="text-gray-700">System Settings</span>
           </button>
-          <button className="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg flex flex-col items-center transition duration-300">
+          <a
+            href="https://support.quickgear.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg flex flex-col items-center transition duration-300 hover:shadow-md"
+          >
             <i className="fas fa-question-circle text-yellow-500 text-2xl mb-2"></i>
             <span className="text-gray-700">Help & Support</span>
-          </button>
+          </a>
         </div>
       </div>
-    </>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">Booking Trends</h3>
+          <div className="h-64">
+            <Line options={lineChartOptions} data={lineChartData} />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">Revenue Overview</h3>
+          <div className="h-64">
+            <Bar options={barChartOptions} data={barChartData} />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Recent Bookings</h3>
+            <Link
+              to="#"
+              onClick={() => document.getElementById("tab-bookings")?.click()}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              View All
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            {bookings && bookings.length > 0 ? (
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Customer
+                    </th>
+                    <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {bookings.slice(0, 5).map((booking) => {
+                    const product = products.find(
+                      (p) => p.id === booking.product_id
+                    );
+                    const user = users.find((u) => u.id === booking.user_id);
+                    return (
+                      <tr key={booking.id} className="hover:bg-gray-50">
+                        <td className="py-2 px-3 whitespace-nowrap">
+                          {booking.id}
+                        </td>
+                        <td className="py-2 px-3 whitespace-nowrap">
+                          {product ? product.name : "Unknown Product"}
+                        </td>
+                        <td className="py-2 px-3 whitespace-nowrap">
+                          {user ? user.full_name : "Unknown User"}
+                        </td>
+                        <td className="py-2 px-3 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              booking.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : booking.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : booking.status === "cancelled"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {booking.status.charAt(0).toUpperCase() +
+                              booking.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-center py-8">
+                <i className="fas fa-calendar-alt text-gray-300 text-4xl mb-2"></i>
+                <p className="text-gray-500">No bookings found</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Popular Products</h3>
+            <Link
+              to="#"
+              onClick={() => document.getElementById("tab-products")?.click()}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              View All
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {products && products.length > 0 ? (
+              products
+                .sort((a, b) => {
+                  const aBookings = bookings.filter(
+                    (booking) => booking.product_id === a.id
+                  ).length;
+                  const bBookings = bookings.filter(
+                    (booking) => booking.product_id === b.id
+                  ).length;
+                  return bBookings - aBookings;
+                })
+                .slice(0, 5)
+                .map((product) => {
+                  const bookingCount = bookings.filter(
+                    (booking) => booking.product_id === product.id
+                  ).length;
+                  return (
+                    <div
+                      key={product.id}
+                      className="flex items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50"
+                    >
+                      <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center mr-3">
+                        <i
+                          className={`fas fa-${
+                            product.category === "camera" ? "camera" : "tools"
+                          } text-gray-500`}
+                        ></i>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {product.name}
+                        </p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {product.category}
+                        </p>
+                      </div>
+                      <div className="inline-flex items-center text-sm font-semibold text-gray-900">
+                        {bookingCount} bookings
+                      </div>
+                    </div>
+                  );
+                })
+            ) : (
+              <div className="text-center py-8">
+                <i className="fas fa-box text-gray-300 text-4xl mb-2"></i>
+                <p className="text-gray-500">No products found</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

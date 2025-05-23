@@ -16,6 +16,7 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              id={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
             >

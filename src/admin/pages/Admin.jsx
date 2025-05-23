@@ -101,7 +101,27 @@ const Admin = () => {
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
+
+    window.location.hash = tabId;
+
+    window.scrollTo(0, 0);
   };
+
+  useEffect(() => {
+    const hash = window.location.hash.substring(1);
+    if (
+      hash &&
+      [
+        "tab-dashboard",
+        "tab-products",
+        "tab-bookings",
+        "tab-users",
+        "tab-settings",
+      ].includes(hash)
+    ) {
+      setActiveTab(hash);
+    }
+  }, []);
 
   const handleUpdateProduct = async (updatedProduct) => {
     try {
@@ -152,6 +172,7 @@ const Admin = () => {
   };
 
   const handleAddProduct = async (productData) => {
+    setLoading(true);
     try {
       await AdminApiService.products.add(productData);
       addNotification("Product added successfully", "success");
@@ -159,6 +180,8 @@ const Admin = () => {
     } catch (error) {
       console.error("Error adding product:", error);
       addNotification("Error adding product", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,8 +196,43 @@ const Admin = () => {
     }, 5000);
   };
 
-  if (!isAuthenticated || !isAdmin()) {
-    return <div>Access denied. Redirecting...</div>;
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-md">
+          <i className="fas fa-lock text-red-500 text-5xl mb-4"></i>
+          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">
+            Please log in to access the admin panel.
+          </p>
+          <button
+            onClick={() => navigate("/login")}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (!isAdmin()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-md">
+          <i className="fas fa-exclamation-triangle text-yellow-500 text-5xl mb-4"></i>
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-6">
+            You don't have permission to access the admin panel.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Return to Homepage
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -230,6 +288,9 @@ const Admin = () => {
             loading={loading}
             stats={stats}
             chartData={chartData}
+            products={products}
+            bookings={bookings}
+            users={users}
           />
         </div>
 

@@ -134,7 +134,8 @@ const ProductsSection = ({
             Manage your product inventory, update details and track status.
           </p>
           <button
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+            id="add-product-btn"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg flex items-center transition-all duration-300 hover:-translate-y-0.5 shadow-md hover:shadow-lg"
             onClick={() => setShowAddModal(true)}
           >
             <i className="fas fa-plus mr-2"></i> Add New Product
@@ -261,10 +262,13 @@ const ProductsSection = ({
           </div>
         ) : (
           <table className="min-w-full bg-white border">
-            <thead className="bg-gray-50">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600">
               <tr>
                 <th className="py-3 px-4 border text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID
+                </th>
+                <th className="py-3 px-4 border text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Image
                 </th>
                 <th className="py-3 px-4 border text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Name
@@ -287,6 +291,26 @@ const ProductsSection = ({
               {filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="py-2 px-4 border">{product.id}</td>
+                  <td className="py-2 px-4 border">
+                    <div className="h-10 w-10 bg-gray-100 rounded-md overflow-hidden">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://via.placeholder.com/40?text=No+Image";
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-400">
+                          <i className="fas fa-image"></i>
+                        </div>
+                      )}
+                    </div>
+                  </td>
                   <td className="py-2 px-4 border font-medium text-gray-800">
                     {product.name}
                   </td>

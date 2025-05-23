@@ -137,11 +137,26 @@ const AdminApiService = {
     add: async (productData) => {
       await new Promise((resolve) => setTimeout(resolve, 700));
 
+      let imageUrl = null;
+      if (productData.image) {
+        const fileName = productData.image.name || "product-image.jpg";
+        imageUrl = `https://storage.quickgear.com/products/${Date.now()}-${fileName.replace(
+          /\s+/g,
+          "-"
+        )}`;
+        console.log("Admin - Image would be uploaded to:", imageUrl);
+      }
+
       const newProduct = {
         id: data.products.length + 1,
         ...productData,
+        image_url: imageUrl || productData.image_url || null,
         created_at: new Date().toISOString(),
       };
+
+      if (newProduct.image) {
+        delete newProduct.image;
+      }
 
       console.log("Admin - Adding new product:", newProduct);
       return newProduct;

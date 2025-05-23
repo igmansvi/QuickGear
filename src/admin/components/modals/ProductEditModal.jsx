@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import AdminModal from "../ui/AdminModal";
 
 const ProductEditModal = ({ product, onClose, onSave }) => {
+  const fileInputRef = useRef(null);
   const [name, setName] = useState(product.name);
   const [category, setCategory] = useState(product.category);
   const [price, setPrice] = useState(product.price);
   const [status, setStatus] = useState(product.status);
   const [description, setDescription] = useState(product.description || "");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(product.image_url || null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,6 +40,8 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
       price: Number(price),
       status,
       description,
+      image: image,
+      image_url: !image && imagePreview ? imagePreview : undefined,
     });
   };
 
@@ -33,6 +58,64 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Product Image Section */}
+        <div className="mb-5">
+          <label className="block text-gray-700 font-medium mb-2">
+            Product Image
+          </label>
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all border-gray-300 hover:border-blue-400 hover:bg-gray-50 relative overflow-hidden"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              accept="image/*"
+              className="hidden"
+            />
+
+            {imagePreview ? (
+              <div className="relative w-full h-full">
+                <img
+                  src={imagePreview}
+                  alt="Product preview"
+                  className="w-full h-full object-contain p-2"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://via.placeholder.com/400x300?text=Image+Error";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveImage();
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-red-600 transition-colors"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            ) : (
+              <>
+                <i className="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                <p className="text-gray-500 text-center">
+                  <span className="font-medium text-blue-600">
+                    Click to upload
+                  </span>{" "}
+                  or drag and drop
+                  <br />
+                  <span className="text-sm">
+                    SVG, PNG, JPG or GIF (max. 2MB)
+                  </span>
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="group">
           <label className="block text-gray-700 font-medium mb-2 group-focus-within:text-blue-600 transition-colors duration-200">
             Product Name
