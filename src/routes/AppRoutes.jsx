@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Admin from "../admin/pages/Admin";
 import Homepage from "../pages/Homepage";
 import Browse from "../pages/Browse";
 import Bookings from "../pages/Bookings";
@@ -12,13 +13,12 @@ import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
-import Admin from "../admin/pages/Admin";
+import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Admin routes without Header/Footer */}
         <Route
           path="/admin/*"
           element={
@@ -28,16 +28,15 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Regular routes with Header/Footer */}
         <Route
-          path="*"
+          path="/"
           element={
             <>
               <Header />
               <Routes>
+                <Route path="/" element={<Homepage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/" element={<Homepage />} />
                 <Route
                   path="/browse"
                   element={
@@ -78,6 +77,7 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />
             </>
