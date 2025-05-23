@@ -147,6 +147,27 @@ const DashboardSection = ({
     }
   };
 
+  const getPopularProducts = () => {
+    if (!products.length || !bookings.length) return [];
+
+    const productBookingCounts = {};
+    bookings.forEach((booking) => {
+      const productId = booking.product_id;
+      productBookingCounts[productId] =
+        (productBookingCounts[productId] || 0) + 1;
+    });
+
+    return products
+      .map((product) => ({
+        ...product,
+        bookingCount: productBookingCounts[product.id] || 0,
+      }))
+      .sort((a, b) => b.bookingCount - a.bookingCount)
+      .slice(0, 5);
+  };
+
+  const popularProducts = getPopularProducts();
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -345,48 +366,32 @@ const DashboardSection = ({
             </Link>
           </div>
           <div className="space-y-4">
-            {products && products.length > 0 ? (
-              products
-                .sort((a, b) => {
-                  const aBookings = bookings.filter(
-                    (booking) => booking.product_id === a.id
-                  ).length;
-                  const bBookings = bookings.filter(
-                    (booking) => booking.product_id === b.id
-                  ).length;
-                  return bBookings - aBookings;
-                })
-                .slice(0, 5)
-                .map((product) => {
-                  const bookingCount = bookings.filter(
-                    (booking) => booking.product_id === product.id
-                  ).length;
-                  return (
-                    <div
-                      key={product.id}
-                      className="flex items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50"
-                    >
-                      <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center mr-3">
-                        <i
-                          className={`fas fa-${
-                            product.category === "camera" ? "camera" : "tools"
-                          } text-gray-500`}
-                        ></i>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {product.name}
-                        </p>
-                        <p className="text-sm text-gray-500 truncate">
-                          {product.category}
-                        </p>
-                      </div>
-                      <div className="inline-flex items-center text-sm font-semibold text-gray-900">
-                        {bookingCount} bookings
-                      </div>
-                    </div>
-                  );
-                })
+            {popularProducts.length > 0 ? (
+              popularProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50"
+                >
+                  <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center mr-3">
+                    <i
+                      className={`fas fa-${
+                        product.category === "camera" ? "camera" : "tools"
+                      } text-gray-500`}
+                    ></i>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {product.name}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">
+                      {product.category}
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center text-sm font-semibold text-gray-900">
+                    {product.bookingCount} bookings
+                  </div>
+                </div>
+              ))
             ) : (
               <div className="text-center py-8">
                 <i className="fas fa-box text-gray-300 text-4xl mb-2"></i>

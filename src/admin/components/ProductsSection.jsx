@@ -18,7 +18,11 @@ const ProductsSection = ({
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    filterProducts();
+    if (products.length) {
+      filterProducts();
+    } else {
+      setFilteredProducts([]);
+    }
   }, [products, searchTerm, categoryFilter, statusFilter, sortBy, sortOrder]);
 
   const filterProducts = () => {
@@ -50,12 +54,18 @@ const ProductsSection = ({
     result.sort((a, b) => {
       let comparison = 0;
 
-      if (sortBy === "name") {
-        comparison = a.name.localeCompare(b.name);
-      } else if (sortBy === "price") {
-        comparison = a.price - b.price;
-      } else if (sortBy === "category") {
-        comparison = a.category.localeCompare(b.category);
+      switch (sortBy) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "price":
+          comparison = a.price - b.price;
+          break;
+        case "category":
+          comparison = a.category.localeCompare(b.category);
+          break;
+        default:
+          comparison = 0;
       }
 
       return sortOrder === "asc" ? comparison : -comparison;

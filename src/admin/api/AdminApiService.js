@@ -115,23 +115,27 @@ const AdminApiService = {
     },
 
     update: async (productId, productData) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const productIndex = data.products.findIndex(
-        (p) => p.id === parseInt(productId)
-      );
-      if (productIndex === -1) {
-        throw new Error("Product not found");
+        const productIndex = data.products.findIndex(
+          (p) => p.id === parseInt(productId)
+        );
+        if (productIndex === -1) {
+          throw new Error("Product not found");
+        }
+
+        const updatedProduct = {
+          ...data.products[productIndex],
+          ...productData,
+          id: parseInt(productId),
+        };
+
+        console.log("Admin - Updating product:", updatedProduct);
+        return updatedProduct;
+      } catch (error) {
+        return AdminApiService.errorHandler(error, "Error updating product");
       }
-
-      const updatedProduct = {
-        ...data.products[productIndex],
-        ...productData,
-        id: parseInt(productId),
-      };
-
-      console.log("Admin - Updating product:", updatedProduct);
-      return updatedProduct;
     },
 
     add: async (productData) => {
@@ -825,6 +829,15 @@ const AdminApiService = {
 
       return confirmations[type] || confirmations.default;
     },
+  },
+
+  errorHandler: (error, customMessage = "An error occurred") => {
+    console.error(customMessage, error);
+    return {
+      success: false,
+      message: error.message || customMessage,
+      error: error,
+    };
   },
 };
 

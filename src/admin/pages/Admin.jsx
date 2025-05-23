@@ -125,13 +125,36 @@ const Admin = () => {
     }
   }, []);
 
+  const handleModalState = (modalType, isOpen, data = null) => {
+    switch (modalType) {
+      case "product":
+        setProductModalOpen(isOpen);
+        if (data) setSelectedProduct(data);
+        break;
+      case "booking":
+        setBookingModalOpen(isOpen);
+        if (data) setSelectedBooking(data);
+        break;
+      case "user":
+        setUserModalOpen(isOpen);
+        if (data) setSelectedUser(data);
+        break;
+      case "deleteProduct":
+        setDeleteProductModalOpen(isOpen);
+        if (data) setSelectedProduct(data);
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleUpdateProduct = async (updatedProduct) => {
     try {
       await AdminApiService.products.update(updatedProduct.id, updatedProduct);
       setProducts(
         products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
       );
-      setProductModalOpen(false);
+      handleModalState("product", false);
       addNotification("Product updated successfully", "success");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
@@ -211,10 +234,10 @@ const Admin = () => {
   };
 
   const closeAllModals = () => {
-    setProductModalOpen(false);
-    setBookingModalOpen(false);
-    setUserModalOpen(false);
-    setDeleteProductModalOpen(false);
+    handleModalState("product", false);
+    handleModalState("booking", false);
+    handleModalState("user", false);
+    handleModalState("deleteProduct", false);
   };
 
   useEffect(() => {

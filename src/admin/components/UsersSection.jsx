@@ -13,6 +13,8 @@ const UsersSection = ({ users, loading, onViewDetails, onUpdateStatus }) => {
   useEffect(() => {
     if (users.length) {
       filterUsers();
+    } else {
+      setFilteredUsers([]);
     }
   }, [users, searchTerm]);
 

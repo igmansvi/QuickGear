@@ -17,6 +17,8 @@ const BookingsSection = ({
   useEffect(() => {
     if (bookings.length) {
       filterBookings();
+    } else {
+      setFilteredBookings([]);
     }
   }, [bookings, searchTerm, statusFilter, dateFrom, dateTo]);
 
@@ -42,11 +44,12 @@ const BookingsSection = ({
     }
 
     if (dateFrom && dateTo) {
+      const fromDate = new Date(dateFrom);
+      const toDate = new Date(dateTo);
+      toDate.setHours(23, 59, 59, 999);
+
       result = result.filter((booking) => {
         const bookingDate = new Date(booking.start_date);
-        const fromDate = new Date(dateFrom);
-        const toDate = new Date(dateTo);
-
         return bookingDate >= fromDate && bookingDate <= toDate;
       });
     }
