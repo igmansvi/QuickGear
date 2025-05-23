@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AdminModal from "../ui/AdminModal";
+import AdminModal from "./AdminModal";
 
 const BookingStatusModal = ({ booking, onClose, onUpdate }) => {
   const [newStatus, setNewStatus] = useState(booking.status);

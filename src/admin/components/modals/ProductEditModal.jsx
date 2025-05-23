@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import AdminModal from "../ui/AdminModal";
+import AdminModal from "./AdminModal";
 
 const ProductEditModal = ({ product, onClose, onSave }) => {
   const fileInputRef = useRef(null);

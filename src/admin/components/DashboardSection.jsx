@@ -107,6 +107,46 @@ const DashboardSection = ({
     ],
   };
 
+  const renderLineChart = () => {
+    try {
+      if (!chartData?.bookingTrends?.labels?.length) {
+        return (
+          <div className="flex h-64 items-center justify-center text-gray-500">
+            <p>No booking trend data available</p>
+          </div>
+        );
+      }
+      return <Line options={lineChartOptions} data={lineChartData} />;
+    } catch (error) {
+      console.error("Error rendering line chart:", error);
+      return (
+        <div className="flex h-64 items-center justify-center text-red-500">
+          <p>Error loading chart data</p>
+        </div>
+      );
+    }
+  };
+
+  const renderBarChart = () => {
+    try {
+      if (!chartData?.revenue?.labels?.length) {
+        return (
+          <div className="flex h-64 items-center justify-center text-gray-500">
+            <p>No revenue data available</p>
+          </div>
+        );
+      }
+      return <Bar options={barChartOptions} data={barChartData} />;
+    } catch (error) {
+      console.error("Error rendering bar chart:", error);
+      return (
+        <div className="flex h-64 items-center justify-center text-red-500">
+          <p>Error loading chart data</p>
+        </div>
+      );
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -206,16 +246,12 @@ const DashboardSection = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-xl font-semibold mb-4">Booking Trends</h3>
-          <div className="h-64">
-            <Line options={lineChartOptions} data={lineChartData} />
-          </div>
+          <div className="h-64">{renderLineChart()}</div>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-xl font-semibold mb-4">Revenue Overview</h3>
-          <div className="h-64">
-            <Bar options={barChartOptions} data={barChartData} />
-          </div>
+          <div className="h-64">{renderBarChart()}</div>
         </div>
       </div>
 

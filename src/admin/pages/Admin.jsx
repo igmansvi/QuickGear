@@ -23,6 +23,7 @@ import SettingsSection from "../components/SettingsSection";
 import ProductEditModal from "../components/modals/ProductEditModal";
 import BookingStatusModal from "../components/modals/BookingStatusModal";
 import UserDetailsModal from "../components/modals/UserDetailsModal";
+import DeleteProductConfirmation from "../components/modals/DeleteProductConfirmation";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import ErrorDisplay from "../components/ui/ErrorDisplay";
 
@@ -59,6 +60,7 @@ const Admin = () => {
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
+  const [deleteProductModalOpen, setDeleteProductModalOpen] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -185,6 +187,42 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+    try {
+      setLoading(true);
+      await AdminApiService.products.delete(productId);
+      setProducts(products.filter((p) => p.id !== productId));
+      addNotification("Product deleted successfully", "success");
+      setDeleteProductModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      addNotification("Error deleting product", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmDeleteProduct = (productId) => {
+    const product = products.find((p) => p.id === productId);
+    if (product) {
+      setSelectedProduct(product);
+      setDeleteProductModalOpen(true);
+    }
+  };
+
+  const closeAllModals = () => {
+    setProductModalOpen(false);
+    setBookingModalOpen(false);
+    setUserModalOpen(false);
+    setDeleteProductModalOpen(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      closeAllModals();
+    };
+  }, [activeTab]);
+
   const addNotification = (message, type = "info") => {
     const id = Date.now();
     setNotifications([...notifications, { id, message, type }]);
@@ -310,6 +348,7 @@ const Admin = () => {
               setProductModalOpen(true);
             }}
             onAddProduct={handleAddProduct}
+            onDeleteProduct={confirmDeleteProduct}
           />
         </div>
 
@@ -383,6 +422,16 @@ const Admin = () => {
           user={selectedUser}
           userDetails={userDetails}
           onClose={() => setUserModalOpen(false)}
+        />
+      )}
+
+      {/* Delete Product Confirmation Modal */}
+      {deleteProductModalOpen && selectedProduct && (
+        <DeleteProductConfirmation
+          product={selectedProduct}
+          isOpen={deleteProductModalOpen}
+          onClose={() => setDeleteProductModalOpen(false)}
+          onConfirm={handleDeleteProduct}
         />
       )}
     </div>

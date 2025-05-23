@@ -1,5 +1,5 @@
 import React from "react";
-import AdminModal from "../ui/AdminModal";
+import AdminModal from "./AdminModal";
 
 const UserDetailsModal = ({ user, userDetails, onClose }) => {
   const { stats, bookings } = userDetails;

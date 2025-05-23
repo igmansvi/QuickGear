@@ -161,6 +161,7 @@ const BookingsSection = ({
               onChange={(e) => setDateFrom(e.target.value)}
               className="border rounded-lg pl-10 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="From Date"
+              max={dateTo || undefined}
             />
           </div>
 
@@ -174,6 +175,7 @@ const BookingsSection = ({
               onChange={(e) => setDateTo(e.target.value)}
               className="border rounded-lg pl-10 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="To Date"
+              min={dateFrom || undefined}
             />
           </div>
 

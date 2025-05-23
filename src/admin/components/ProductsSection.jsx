@@ -7,6 +7,7 @@ const ProductsSection = ({
   loading,
   onEditProduct,
   onAddProduct,
+  onDeleteProduct,
 }) => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -342,7 +343,12 @@ const ProductsSection = ({
                     >
                       <i className="fas fa-edit"></i>
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() =>
+                        onDeleteProduct && onDeleteProduct(product.id)
+                      }
+                    >
                       <i className="fas fa-trash"></i>
                     </button>
                   </td>
