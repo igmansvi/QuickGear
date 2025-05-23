@@ -150,9 +150,13 @@ const Admin = () => {
 
   const handleUpdateProduct = async (updatedProduct) => {
     try {
-      await AdminApiService.products.update(updatedProduct.id, updatedProduct);
+      setLoading(true);
+      const result = await AdminApiService.products.update(
+        updatedProduct.id,
+        updatedProduct
+      );
       setProducts(
-        products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+        products.map((p) => (p.id === updatedProduct.id ? result : p))
       );
       handleModalState("product", false);
       addNotification("Product updated successfully", "success");
@@ -160,23 +164,54 @@ const Admin = () => {
     } catch (error) {
       console.error("Error updating product:", error);
       addNotification("Error updating product", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdateBookingStatus = async (bookingId, newStatus) => {
     try {
-      await AdminApiService.bookings.updateStatus(bookingId, newStatus);
-      setBookings(
-        bookings.map((b) =>
-          b.id === bookingId ? { ...b, status: newStatus } : b
+      setLoading(true);
+      const updatedBooking = await AdminApiService.bookings.updateStatus(
+        bookingId,
+        newStatus
+      );
+
+      if (updatedBooking.success === false) {
+        throw new Error(
+          updatedBooking.message || "Failed to update booking status"
+        );
+      }
+
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === parseInt(bookingId) ? updatedBooking : booking
         )
       );
+
       setBookingModalOpen(false);
-      addNotification("Booking status updated successfully", "success");
-      setRefreshTrigger((prev) => prev + 1);
+
+      addNotification(
+        `Booking #${bookingId} status updated to ${newStatus}`,
+        "success"
+      );
+
+      const dashboardStats = await AdminApiService.dashboard.getStats();
+      setStats(dashboardStats);
+
+      if (activeTab === "tab-dashboard") {
+        const charts = await AdminApiService.dashboard.getChartData();
+        setChartData(charts);
+      }
+
     } catch (error) {
       console.error("Error updating booking status:", error);
-      addNotification("Error updating booking status", "error");
+      addNotification(
+        error.message || "Error updating booking status",
+        "error"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -199,7 +234,8 @@ const Admin = () => {
   const handleAddProduct = async (productData) => {
     setLoading(true);
     try {
-      await AdminApiService.products.add(productData);
+      const newProduct = await AdminApiService.products.add(productData);
+      setProducts([...products, newProduct]);
       addNotification("Product added successfully", "success");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
@@ -217,6 +253,8 @@ const Admin = () => {
       setProducts(products.filter((p) => p.id !== productId));
       addNotification("Product deleted successfully", "success");
       setDeleteProductModalOpen(false);
+      const dashboardStats = await AdminApiService.dashboard.getStats();
+      setStats(dashboardStats);
     } catch (error) {
       console.error("Error deleting product:", error);
       addNotification("Error deleting product", "error");
@@ -259,15 +297,70 @@ const Admin = () => {
 
   const handleUpdateUserStatus = async (userId, newStatus) => {
     try {
-      await AdminApiService.users.updateStatus(userId, newStatus);
+      setLoading(true);
+      const updatedUser = await AdminApiService.users.updateStatus(
+        userId,
+        newStatus
+      );
       setUsers(
-        users.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
+        users.map((u) =>
+          u.id === userId ? { ...updatedUser, password: undefined } : u
+        )
       );
       addNotification(`User status updated to ${newStatus}`, "success");
-      setRefreshTrigger((prev) => prev + 1);
+      if (userDetails && selectedUser && selectedUser.id === userId) {
+        const refreshedUserDetails = await AdminApiService.users.getStats(
+          userId
+        );
+        setUserDetails(refreshedUserDetails);
+      }
     } catch (error) {
       console.error("Error updating user status:", error);
       addNotification("Error updating user status", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportData = async (dataType, format = "json") => {
+    try {
+      setLoading(true);
+
+      let exportData;
+      let filename;
+
+      switch (dataType) {
+        case "products":
+          exportData = products;
+          filename = `products-export-${new Date().toISOString().slice(0, 10)}`;
+          break;
+        case "bookings":
+          exportData = bookings;
+          filename = `bookings-export-${new Date().toISOString().slice(0, 10)}`;
+          break;
+        case "users":
+          exportData = users;
+          filename = `users-export-${new Date().toISOString().slice(0, 10)}`;
+          break;
+        default:
+          throw new Error("Invalid data type for export");
+      }
+
+      if (format === "csv") {
+        AdminApiService.utils.downloadCsvFile(exportData, `${filename}.csv`);
+      } else {
+        AdminApiService.utils.downloadJsonFile(exportData, `${filename}.json`);
+      }
+
+      addNotification(
+        `${dataType} exported successfully as ${format.toUpperCase()}`,
+        "success"
+      );
+    } catch (error) {
+      console.error(`Error exporting ${dataType}:`, error);
+      addNotification(`Error exporting ${dataType}`, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -367,6 +460,7 @@ const Admin = () => {
             bookings={bookings}
             users={users}
             onNotification={addNotification}
+            onExportData={handleExportData}
           />
         </div>
 
@@ -386,6 +480,7 @@ const Admin = () => {
             }}
             onAddProduct={handleAddProduct}
             onDeleteProduct={confirmDeleteProduct}
+            onExport={(format) => handleExportData("products", format)}
           />
         </div>
 

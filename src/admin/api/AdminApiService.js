@@ -131,7 +131,6 @@ const AdminApiService = {
           id: parseInt(productId),
         };
 
-        console.log("Admin - Updating product:", updatedProduct);
         return updatedProduct;
       } catch (error) {
         return AdminApiService.errorHandler(error, "Error updating product");
@@ -148,7 +147,6 @@ const AdminApiService = {
           /\s+/g,
           "-"
         )}`;
-        console.log("Admin - Image would be uploaded to:", imageUrl);
       }
 
       const newProduct = {
@@ -162,7 +160,6 @@ const AdminApiService = {
         delete newProduct.image;
       }
 
-      console.log("Admin - Adding new product:", newProduct);
       return newProduct;
     },
 
@@ -176,7 +173,6 @@ const AdminApiService = {
         throw new Error("Product not found");
       }
 
-      console.log(`Admin - Deleting product with ID: ${productId}`);
       return { success: true, message: "Product deleted successfully" };
     },
   },
@@ -188,22 +184,39 @@ const AdminApiService = {
     },
 
     updateStatus: async (bookingId, status) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const bookingIndex = data.bookings.findIndex(
-        (b) => b.id === parseInt(bookingId)
-      );
-      if (bookingIndex === -1) {
-        throw new Error("Booking not found");
+        const bookingIndex = data.bookings.findIndex(
+          (b) => b.id === parseInt(bookingId)
+        );
+        if (bookingIndex === -1) {
+          throw new Error("Booking not found");
+        }
+
+        const validStatuses = [
+          "pending",
+          "confirmed",
+          "completed",
+          "cancelled",
+        ];
+        if (!validStatuses.includes(status)) {
+          throw new Error(`Invalid booking status: ${status}`);
+        }
+
+        const updatedBooking = {
+          ...data.bookings[bookingIndex],
+          status,
+          updated_at: new Date().toISOString(),
+        };
+
+        return updatedBooking;
+      } catch (error) {
+        return AdminApiService.errorHandler(
+          error,
+          "Error updating booking status"
+        );
       }
-
-      const updatedBooking = {
-        ...data.bookings[bookingIndex],
-        status,
-      };
-
-      console.log(`Admin - Updated booking ${bookingId} status to ${status}`);
-      return updatedBooking;
     },
   },
 
@@ -295,7 +308,6 @@ const AdminApiService = {
         status: newStatus,
       };
 
-      console.log(`Admin - Updated user ${userId} status to ${newStatus}`);
       return updatedUser;
     },
   },
@@ -313,8 +325,6 @@ const AdminApiService = {
         generated_by: "admin",
       };
 
-      console.log("Generating report:", exportData);
-
       return exportData;
     },
   },
@@ -326,6 +336,30 @@ const AdminApiService = {
         encodeURIComponent(JSON.stringify(data, null, 2));
       const downloadAnchorNode = document.createElement("a");
       downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", filename);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+
+      return true;
+    },
+
+    downloadCsvFile: (data, filename = "export.csv") => {
+      const headers = Object.keys(data[0] || {}).join(",");
+      const csvRows = data.map((row) =>
+        Object.values(row)
+          .map((value) =>
+            typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value
+          )
+          .join(",")
+      );
+
+      const csvString = [headers, ...csvRows].join("\n");
+      const csvData =
+        "data:text/csv;charset=utf-8," + encodeURIComponent(csvString);
+
+      const downloadAnchorNode = document.createElement("a");
+      downloadAnchorNode.setAttribute("href", csvData);
       downloadAnchorNode.setAttribute("download", filename);
       document.body.appendChild(downloadAnchorNode);
       downloadAnchorNode.click();
