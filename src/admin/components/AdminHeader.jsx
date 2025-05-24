@@ -1,9 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const AdminHeader = ({ username, onRefresh }) => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleHomeRedirect = () => {
+    navigate("/");
+  };
 
   return (
     <header className="bg-gradient-to-r from-[#2b2d42] to-[#4361ee] text-white shadow-xl sticky top-0 z-40">
@@ -33,11 +38,16 @@ const AdminHeader = ({ username, onRefresh }) => {
               <i className="fas fa-sync-alt"></i>
             </button>
 
-            <div className="hidden md:flex items-center bg-white/10 rounded-full px-4 py-1.5">
-              <i className="fas fa-user-shield mr-2 text-blue-300"></i>
-              <span className="text-white font-medium">
-                Welcome, {username}
-              </span>
+            <div
+              className="hidden md:flex items-center bg-white/10 rounded-full px-4 py-1.5 hover:bg-white/20 transition-colors duration-300 cursor-pointer"
+              onClick={handleHomeRedirect}
+            >
+              <Link to="/" className="flex items-center">
+                <span className="text-white font-medium">
+                  Welcome, {username}
+                </span>
+                <i className="fas fa-home ml-2 text-blue-300"></i>
+              </Link>
             </div>
 
             <button

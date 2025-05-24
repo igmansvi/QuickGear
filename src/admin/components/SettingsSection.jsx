@@ -150,7 +150,7 @@ const SettingsSection = ({ adminUser, onNotification }) => {
                           siteDescription: e.target.value,
                         })
                       }
-                      className="w-full border rounded-lg px-3 py-2"
+                      className="w-full border rounded-lg px-3 py-2 resize-none"
                       rows="3"
                     ></textarea>
                   </div>
