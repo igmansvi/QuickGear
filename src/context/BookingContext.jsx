@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import ApiService from "../services/apiService";
 import { useAuth } from "./AuthContext";
+import { useProducts } from "./ProductContext";
 
 const BookingContext = createContext();
 
@@ -13,6 +14,7 @@ export const BookingProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
+  const { products, getProduct } = useProducts();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -53,12 +55,53 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
+  const confirmBooking = async (bookingId) => {
+    try {
+      setLoading(true);
+
+      const booking = bookings.find((b) => b.id === parseInt(bookingId));
+      if (!booking) {
+        throw new Error("Booking not found");
+      }
+
+      const product = getProduct(booking.product_id);
+      if (!product) {
+        throw new Error("Product not found");
+      }
+
+      const updatedBooking = {
+        ...booking,
+        status: "confirmed",
+      };
+
+      console.log("Confirming booking:", updatedBooking);
+
+      setBookings((prevBookings) =>
+        prevBookings.map((b) =>
+          b.id === parseInt(bookingId) ? updatedBooking : b
+        )
+      );
+
+      return {
+        booking: updatedBooking,
+        productName: product.name,
+        userId: booking.user_id,
+      };
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     bookings,
     loading,
     error,
     getUserBookings,
     createBooking,
+    confirmBooking,
   };
 
   return (

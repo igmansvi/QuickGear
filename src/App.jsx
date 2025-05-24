@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ProductProvider } from "./context/ProductContext";
 import { ReviewProvider } from "./context/ReviewContext";
 import { BookingProvider } from "./context/BookingContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import AppRoutes from "./routes/AppRoutes";
 
 const App = () => {
@@ -12,7 +13,9 @@ const App = () => {
         <ProductProvider>
           <ReviewProvider>
             <BookingProvider>
-              <AppRoutes />
+              <NotificationProvider>
+                <AppRoutes />
+              </NotificationProvider>
             </BookingProvider>
           </ReviewProvider>
         </ProductProvider>

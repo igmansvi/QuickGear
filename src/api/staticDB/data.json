@@ -372,5 +372,124 @@
       "created_at": "2025-03-31 12:47:05",
       "updated_at": "2025-04-11 08:26:07"
     }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "user_id": 2,
+      "booking_id": 5,
+      "message": "Your booking for PlayStation 5 has been confirmed after successful payment.",
+      "type": "booking_confirmed",
+      "is_read": false,
+      "created_at": "2025-02-28 14:30:00"
+    },
+    {
+      "id": 2,
+      "user_id": 3,
+      "booking_id": 9,
+      "message": "Your booking for Professional DJ Setup has been confirmed after successful payment.",
+      "type": "booking_confirmed",
+      "is_read": true,
+      "created_at": "2025-01-20 09:45:00"
+    },
+    {
+      "id": 3,
+      "user_id": 4,
+      "booking_id": 14,
+      "message": "Your booking for Professional Lighting Kit has been confirmed after successful payment.",
+      "type": "booking_confirmed",
+      "is_read": false,
+      "created_at": "2024-12-05 11:20:00"
+    },
+    {
+      "id": 4,
+      "user_id": 2,
+      "booking_id": 6,
+      "message": "Your payment for Drone with 4K Camera is pending. Complete payment to confirm your booking.",
+      "type": "payment_reminder",
+      "is_read": false,
+      "created_at": "2025-03-12 16:15:00"
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "booking_id": 8,
+      "message": "How was your experience with the DSLR Camera? Please leave a review.",
+      "type": "review_request",
+      "is_read": true,
+      "created_at": "2024-11-09 10:00:00"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "booking_id": 7,
+      "message": "Your booking for Professional Lighting Kit is still pending payment. Please complete payment to confirm.",
+      "type": "payment_reminder",
+      "is_read": false,
+      "created_at": "2025-01-17 09:30:00"
+    },
+    {
+      "id": 7,
+      "user_id": 4,
+      "booking_id": 12,
+      "message": "Your booking for PlayStation 5 is awaiting payment confirmation.",
+      "type": "payment_reminder",
+      "is_read": true,
+      "created_at": "2024-11-02 11:45:00"
+    },
+    {
+      "id": 8,
+      "user_id": 4,
+      "booking_id": 13,
+      "message": "Your booking for Drone with 4K Camera has been completed. We hope you enjoyed using our product!",
+      "type": "booking_completed",
+      "is_read": false,
+      "created_at": "2024-10-09 14:20:00"
+    },
+    {
+      "id": 9,
+      "user_id": 3,
+      "booking_id": 10,
+      "message": "Your booking for Power Generator has been cancelled. Refund will be processed within 3-5 business days.",
+      "type": "booking_cancelled",
+      "is_read": true,
+      "created_at": "2025-01-09 16:40:00"
+    },
+    {
+      "id": 10,
+      "user_id": 3,
+      "booking_id": 11,
+      "message": "Your booking for Heavy Duty Lawn Mower has been cancelled as requested.",
+      "type": "booking_cancelled",
+      "is_read": false,
+      "created_at": "2024-12-29 13:15:00"
+    },
+    {
+      "id": 11,
+      "user_id": 4,
+      "booking_id": 15,
+      "message": "Your booking for DSLR Camera has been cancelled. Refund has been initiated.",
+      "type": "booking_cancelled",
+      "is_read": true,
+      "created_at": "2025-02-06 10:30:00"
+    },
+    {
+      "id": 12,
+      "user_id": 2,
+      "booking_id": 5,
+      "message": "Your booking for PlayStation 5 is starting tomorrow. Get ready for your gaming session!",
+      "type": "booking_reminder",
+      "is_read": false,
+      "created_at": "2025-03-04 09:00:00"
+    },
+    {
+      "id": 13,
+      "user_id": 4,
+      "booking_id": 13,
+      "message": "Thank you for your review of the Drone with 4K Camera. Your feedback helps other users!",
+      "type": "review_acknowledgement",
+      "is_read": false,
+      "created_at": "2025-04-11 08:00:00"
+    }
   ]
 }

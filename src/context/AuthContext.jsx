@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const checkSessionExpiry = () => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -31,9 +32,19 @@ export const AuthProvider = ({ children }) => {
     const validUser = checkSessionExpiry();
     if (validUser) {
       setUser(validUser);
+      fetchUnreadNotificationsCount(validUser.id);
     }
     setLoading(false);
   }, []);
+
+  const fetchUnreadNotificationsCount = async (userId) => {
+    try {
+      const count = await ApiService.notifications.getUnreadCount(userId);
+      setUnreadNotifications(count);
+    } catch (err) {
+      console.error("Error fetching notification count:", err);
+    }
+  };
 
   const login = async (email, password) => {
     setLoading(true);
@@ -47,6 +58,8 @@ export const AuthProvider = ({ children }) => {
       };
       setUser(userWithTimestamp);
       localStorage.setItem("user", JSON.stringify(userWithTimestamp));
+
+      fetchUnreadNotificationsCount(foundUser.id);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -77,10 +90,17 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
+    setUnreadNotifications(0);
   };
 
   const isAdmin = () => {
     return user && user.role === "admin";
+  };
+
+  const refreshNotificationCount = () => {
+    if (user) {
+      fetchUnreadNotificationsCount(user.id);
+    }
   };
 
   const value = {
@@ -93,6 +113,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!user,
     isAdmin,
+    unreadNotifications,
+    refreshNotificationCount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
