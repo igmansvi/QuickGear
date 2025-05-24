@@ -46,21 +46,21 @@ const BookingsCard = ({ booking, product }) => {
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm text-gray-600 flex items-center">
+            <div className="text-sm text-gray-600 flex items-center">
               <i className="fas fa-calendar-day text-blue-500 mr-2 w-5 text-center"></i>
               <DateRange
                 startDate={booking.start_date}
                 endDate={booking.end_date}
                 format="short"
               />
-            </p>
+            </div>
 
-            <p className="text-xs text-gray-500 flex items-center">
+            <div className="text-xs text-gray-500 flex items-center">
               <i className="fas fa-clock text-gray-400 mr-2 w-5 text-center"></i>
               <span>
                 Booked on: {formatDate(booking.booking_date, "short")}
               </span>
-            </p>
+            </div>
           </div>
 
           <div className="mt-4 flex justify-end">

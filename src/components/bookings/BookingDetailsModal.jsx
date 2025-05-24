@@ -13,16 +13,23 @@ const BookingDetailsModal = ({ booking, product, onClose }) => {
   const totalDays = calculateTotalDays(booking.start_date, booking.end_date);
 
   const productPrice =
-    product?.price || booking.product_price || booking.productPrice || 0;
+    product && typeof product.price !== "undefined"
+      ? product.price
+      : booking.product_price || booking.productPrice || 0;
+
   const totalAmount = productPrice * totalDays;
 
   const productName =
-    product?.name ||
+    (product && product.name) ||
     booking.productName ||
     booking.product_name ||
     "Unknown Product";
+
   const productImage =
-    product?.image || booking.productImage || booking.product_image || "";
+    (product && product.image) ||
+    booking.productImage ||
+    booking.product_image ||
+    "";
 
   return (
     <Modal onClose={onClose} size="md">
@@ -101,7 +108,7 @@ const BookingDetailsModal = ({ booking, product, onClose }) => {
             <div className="flex justify-between items-center text-gray-700 py-2 border-b border-gray-100">
               <span>Daily Rate</span>
               <span className="font-medium">
-                ₹{productPrice?.toLocaleString() || "N/A"}
+                ₹{productPrice ? productPrice.toLocaleString() : "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-center text-gray-700 py-2 border-b border-gray-100">
@@ -110,7 +117,7 @@ const BookingDetailsModal = ({ booking, product, onClose }) => {
             </div>
             <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg text-blue-800 font-semibold">
               <span>Total Amount</span>
-              <span>₹{totalAmount?.toLocaleString() || "N/A"}</span>
+              <span>₹{totalAmount ? totalAmount.toLocaleString() : "N/A"}</span>
             </div>
           </div>
 

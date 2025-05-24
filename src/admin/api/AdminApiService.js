@@ -1,4 +1,4 @@
-import data from "../../api/staticDB/data.json";
+import data from "../../staticDB/data.json";
 
 const AdminApiService = {
   dashboard: {

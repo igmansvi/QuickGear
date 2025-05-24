@@ -47,39 +47,39 @@ const BookingItem = ({ booking, onCancel, onReview }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
             <div>
-              <p className="text-sm text-gray-600 flex items-center">
+              <div className="text-sm text-gray-600 flex items-center">
                 <i className="fas fa-hashtag text-blue-500 mr-1.5 w-4 text-center"></i>
                 Booking ID:{" "}
                 <span className="font-medium ml-1">#{booking.id}</span>
-              </p>
+              </div>
             </div>
             <div>
-              <p className="text-sm text-gray-600 flex items-center">
+              <div className="text-sm text-gray-600 flex items-center">
                 <i className="fas fa-tag text-blue-500 mr-1.5 w-4 text-center"></i>
                 Price:{" "}
                 <span className="font-medium ml-1">
                   ₹{booking.product_price.toLocaleString()}/day
                 </span>
-              </p>
+              </div>
             </div>
             <div className="col-span-1 sm:col-span-2">
-              <p className="text-sm text-gray-600 flex items-center">
+              <div className="text-sm text-gray-600 flex items-center">
                 <i className="fas fa-calendar-day text-blue-500 mr-1.5 w-4 text-center"></i>
                 <DateRange
                   startDate={booking.start_date}
                   endDate={booking.end_date}
                   format="short"
                 />
-              </p>
+              </div>
             </div>
             {booking.message && (
               <div className="col-span-1 sm:col-span-2">
-                <p className="text-sm text-gray-600 flex items-start">
+                <div className="text-sm text-gray-600 flex items-start">
                   <i className="fas fa-comment text-blue-500 mr-1.5 w-4 text-center mt-1"></i>
                   <span className="line-clamp-2 text-gray-500 italic">
                     {booking.message}
                   </span>
-                </p>
+                </div>
               </div>
             )}
           </div>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { bookings, products } from "../api/staticDB/data.json";
 import BookingsCard from "../components/bookings/BookingsCard";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ApiService from "../services/apiService";
 
 const Bookings = () => {
   const [userBookings, setUserBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -17,25 +19,39 @@ const Bookings = () => {
 
     if (!user) {
       setUserBookings([]);
+      setLoading(false);
       return;
     }
 
-    const userId = user.id;
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const filteredBookings = bookings.filter(
-      (booking) => booking.user_id === userId
-    );
+        const bookings = await ApiService.bookings.getByUserId(user.id);
 
-    const enrichedBookings = filteredBookings.map((booking) => {
-      const product = products.find((p) => p.id === booking.product_id);
-      return {
-        ...booking,
-        productName: product?.name || "Unknown Product",
-        productImage: product?.image || "",
-      };
-    });
+        const products = await ApiService.products.getAll();
 
-    setUserBookings(enrichedBookings);
+        const enrichedBookings = bookings.map((booking) => {
+          const product = products.find((p) => p.id === booking.product_id);
+          return {
+            ...booking,
+            productName: product?.name || "Unknown Product",
+            productImage: product?.image || "",
+            productPrice: product?.price || 0, // Add this line to include price
+          };
+        });
+
+        setUserBookings(enrichedBookings);
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+        setError("Failed to load your bookings. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
   }, [user, isAuthenticated, navigate]);
 
   if (!user) {
@@ -81,7 +97,25 @@ const Bookings = () => {
           </p>
         </div>
 
-        {userBookings.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="mt-4 text-gray-600">Loading your bookings...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm mx-auto max-w-lg">
+            <div className="mb-4 text-red-500">
+              <i className="fas fa-exclamation-circle text-5xl"></i>
+            </div>
+            <p className="text-gray-700 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg"
+            >
+              <i className="fas fa-sync-alt mr-2"></i> Try Again
+            </button>
+          </div>
+        ) : userBookings.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-xl shadow-sm mx-auto max-w-lg">
             <div className="animate-bounce mb-4">
               <i className="fas fa-calendar-times text-gray-400 text-5xl mb-3"></i>
@@ -102,7 +136,12 @@ const Bookings = () => {
               <BookingsCard
                 key={booking.id}
                 booking={booking}
-                product={products.find((p) => p.id === booking.product_id)}
+                product={{
+                  id: booking.product_id,
+                  name: booking.productName,
+                  image: booking.productImage,
+                  price: booking.productPrice || booking.product_price || 0,
+                }}
               />
             ))}
           </div>
