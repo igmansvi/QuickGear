@@ -1,7 +1,20 @@
 import React from "react";
-import { getStatusColor } from "../../utils/formatting";
 
 const StatusBadge = ({ status, className = "", size = "md" }) => {
+  const getStatusColor = (status) => {
+    const colors = {
+      available: "#22c55e",
+      pending: "#f59e0b",
+      confirmed: "#3b82f6",
+      completed: "#10b981",
+      coming_soon: "#f97316",
+      rented: "#ef4444",
+      cancelled: "#dc2626",
+    };
+
+    return colors[status] || "#9ca3af";
+  };
+
   const formatStatusText = (status) => {
     return status
       .replace(/_/g, " ")

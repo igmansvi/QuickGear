@@ -1,8 +1,39 @@
 import React from "react";
 import Modal from "../ui/Modal";
-import { formatDate } from "../../utils/formatting";
 
 const CancelModal = ({ booking, onCancel, onClose }) => {
+
+const formatDate = (dateString, format = "medium") => {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date)) return "Invalid date";
+
+    const options = {
+      short: { month: "short", day: "numeric" },
+      medium: { month: "short", day: "numeric", year: "numeric" },
+      long: {
+        weekday: "short",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      },
+      full: {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      },
+    };
+
+    return date.toLocaleDateString("en-US", options[format] || options.medium);
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString || "N/A";
+  }
+};
+
   return (
     <Modal onClose={onClose} size="sm">
       <div className="p-6">

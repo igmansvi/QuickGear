@@ -1,6 +1,4 @@
 import React from "react";
-import { formatDate, getStatusColor } from "../../utils/formatting";
-import StatusBadge from "../ui/StatusBadge";
 import DateRange from "../ui/DateRange";
 
 const BookingItem = ({ booking, onCancel, onReview }) => {
@@ -16,6 +14,54 @@ const BookingItem = ({ booking, onCancel, onReview }) => {
         return "times-circle";
       default:
         return "question-circle";
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      available: "#22c55e",
+      pending: "#f59e0b",
+      confirmed: "#3b82f6",
+      completed: "#10b981",
+      coming_soon: "#f97316",
+      rented: "#ef4444",
+      cancelled: "#dc2626",
+    };
+
+    return colors[status] || "#9ca3af";
+  };
+
+  const formatDate = (dateString, format = "medium") => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date)) return "Invalid date";
+
+      const options = {
+        short: { month: "short", day: "numeric" },
+        medium: { month: "short", day: "numeric", year: "numeric" },
+        long: {
+          weekday: "short",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        },
+        full: {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      };
+
+      return date.toLocaleDateString(
+        "en-US",
+        options[format] || options.medium
+      );
+    } catch (error) {
+      console.error("Date formatting error:", error);
+      return dateString || "N/A";
     }
   };
 

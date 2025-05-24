@@ -1,14 +1,71 @@
 import React from "react";
-import {
-  getStatusColor,
-  formatDate,
-  calculateTotalDays,
-} from "../../utils/formatting";
 import Modal from "../ui/Modal";
 import DateRange from "../ui/DateRange";
 
 const BookingDetailsModal = ({ booking, product, onClose }) => {
   if (!booking) return null;
+
+  const calculateTotalDays = (startDate, endDate) => {
+    if (startDate === endDate) return 1;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start) || isNaN(end)) return 0;
+
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays + 1;
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      available: "#22c55e",
+      pending: "#f59e0b",
+      confirmed: "#3b82f6",
+      completed: "#10b981",
+      coming_soon: "#f97316",
+      rented: "#ef4444",
+      cancelled: "#dc2626",
+    };
+
+    return colors[status] || "#9ca3af";
+  };
+
+  const formatDate = (dateString, format = "medium") => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date)) return "Invalid date";
+
+      const options = {
+        short: { month: "short", day: "numeric" },
+        medium: { month: "short", day: "numeric", year: "numeric" },
+        long: {
+          weekday: "short",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        },
+        full: {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      };
+
+      return date.toLocaleDateString(
+        "en-US",
+        options[format] || options.medium
+      );
+    } catch (error) {
+      console.error("Date formatting error:", error);
+      return dateString || "N/A";
+    }
+  };
 
   const totalDays = calculateTotalDays(booking.start_date, booking.end_date);
 
