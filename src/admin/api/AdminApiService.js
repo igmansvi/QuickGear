@@ -1,19 +1,22 @@
-import data from "../../staticDB/data.json";
+import localStorageDB from "../../staticDB/LocalStorageDB";
 
 const AdminApiService = {
   dashboard: {
     getStats: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const pendingBookings = data.bookings.filter(
+      const bookings = localStorageDB.getCollection("bookings");
+      const products = localStorageDB.getCollection("products");
+      const users = localStorageDB.getCollection("users");
+
+      const pendingBookings = bookings.filter(
         (b) => b.status === "pending"
       ).length;
-      const totalRevenue = data.bookings
+
+      const totalRevenue = bookings
         .filter((b) => b.status !== "cancelled")
         .reduce((total, booking) => {
-          const product = data.products.find(
-            (p) => p.id === booking.product_id
-          );
+          const product = products.find((p) => p.id === booking.product_id);
           if (product) {
             const startDate = new Date(booking.start_date);
             const endDate = new Date(booking.end_date);
@@ -26,9 +29,9 @@ const AdminApiService = {
         }, 0);
 
       return {
-        totalProducts: data.products.length,
-        totalBookings: data.bookings.length,
-        totalUsers: data.users.filter((u) => u.role !== "admin").length,
+        totalProducts: products.length,
+        totalBookings: bookings.length,
+        totalUsers: users.filter((u) => u.role !== "admin").length,
         pendingBookings,
         totalRevenue,
       };
@@ -36,6 +39,9 @@ const AdminApiService = {
 
     getChartData: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const bookings = localStorageDB.getCollection("bookings");
+      const products = localStorageDB.getCollection("products");
 
       const last6Months = [];
       const currentDate = new Date();
@@ -54,7 +60,7 @@ const AdminApiService = {
       const bookingTrendsData = last6Months.map((m) => {
         return {
           month: m.month,
-          count: data.bookings.filter((b) => {
+          count: bookings.filter((b) => {
             const bookingDate = new Date(b.booking_date);
             return (
               bookingDate.getMonth() === m.monthIndex &&
@@ -65,7 +71,7 @@ const AdminApiService = {
       });
 
       const revenueData = last6Months.map((m) => {
-        const monthBookings = data.bookings.filter((b) => {
+        const monthBookings = bookings.filter((b) => {
           const bookingDate = new Date(b.booking_date);
           return (
             bookingDate.getMonth() === m.monthIndex &&
@@ -76,9 +82,7 @@ const AdminApiService = {
 
         let monthRevenue = 0;
         monthBookings.forEach((booking) => {
-          const product = data.products.find(
-            (p) => p.id === booking.product_id
-          );
+          const product = products.find((p) => p.id === booking.product_id);
           if (product) {
             const startDate = new Date(booking.start_date);
             const endDate = new Date(booking.end_date);
@@ -111,25 +115,21 @@ const AdminApiService = {
   products: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.products];
+      return localStorageDB.getCollection("products");
     },
 
     update: async (productId, productData) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const productIndex = data.products.findIndex(
-          (p) => p.id === parseInt(productId)
+        const updatedProduct = localStorageDB.updateItem(
+          "products",
+          productId,
+          productData
         );
-        if (productIndex === -1) {
+        if (!updatedProduct) {
           throw new Error("Product not found");
         }
-
-        const updatedProduct = {
-          ...data.products[productIndex],
-          ...productData,
-          id: parseInt(productId),
-        };
 
         return updatedProduct;
       } catch (error) {
@@ -150,26 +150,23 @@ const AdminApiService = {
       }
 
       const newProduct = {
-        id: data.products.length + 1,
         ...productData,
         image_url: imageUrl || productData.image_url || null,
-        created_at: new Date().toISOString(),
+        created_at: localStorageDB.getTimestamp(),
       };
 
       if (newProduct.image) {
         delete newProduct.image;
       }
 
-      return newProduct;
+      return localStorageDB.addItem("products", newProduct);
     },
 
     delete: async (productId) => {
       await new Promise((resolve) => setTimeout(resolve, 600));
 
-      const productIndex = data.products.findIndex(
-        (p) => p.id === parseInt(productId)
-      );
-      if (productIndex === -1) {
+      const deleted = localStorageDB.deleteItem("products", productId);
+      if (!deleted) {
         throw new Error("Product not found");
       }
 
@@ -180,17 +177,15 @@ const AdminApiService = {
   bookings: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.bookings];
+      return localStorageDB.getCollection("bookings");
     },
 
     updateStatus: async (bookingId, status) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const bookingIndex = data.bookings.findIndex(
-          (b) => b.id === parseInt(bookingId)
-        );
-        if (bookingIndex === -1) {
+        const booking = localStorageDB.getItem("bookings", bookingId);
+        if (!booking) {
           throw new Error("Booking not found");
         }
 
@@ -204,11 +199,14 @@ const AdminApiService = {
           throw new Error(`Invalid booking status: ${status}`);
         }
 
-        const updatedBooking = {
-          ...data.bookings[bookingIndex],
-          status,
-          updated_at: new Date().toISOString(),
-        };
+        const updatedBooking = localStorageDB.updateItem(
+          "bookings",
+          bookingId,
+          {
+            status,
+            updated_at: localStorageDB.getTimestamp(),
+          }
+        );
 
         return updatedBooking;
       } catch (error) {
@@ -224,7 +222,8 @@ const AdminApiService = {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const usersWithStatus = data.users
+      const users = localStorageDB.getCollection("users");
+      const usersWithStatus = users
         .map(({ password, ...user }) => ({
           ...user,
           status: user.status || "active",
@@ -237,31 +236,31 @@ const AdminApiService = {
     getStats: async (userId) => {
       await new Promise((resolve) => setTimeout(resolve, 700));
 
-      const user = data.users.find((u) => u.id === parseInt(userId));
+      const user = localStorageDB.getItem("users", userId);
       if (!user) {
         throw new Error("User not found");
       }
 
-      const userBookings = data.bookings.filter(
+      const bookings = localStorageDB.filterCollection(
+        "bookings",
         (b) => b.user_id === parseInt(userId)
       );
 
+      const products = localStorageDB.getCollection("products");
+
       const stats = {
-        total_bookings: userBookings.length,
-        completed_bookings: userBookings.filter((b) => b.status === "completed")
+        total_bookings: bookings.length,
+        completed_bookings: bookings.filter((b) => b.status === "completed")
           .length,
-        cancelled_bookings: userBookings.filter((b) => b.status === "cancelled")
+        cancelled_bookings: bookings.filter((b) => b.status === "cancelled")
           .length,
-        pending_bookings: userBookings.filter((b) => b.status === "pending")
+        pending_bookings: bookings.filter((b) => b.status === "pending").length,
+        confirmed_bookings: bookings.filter((b) => b.status === "confirmed")
           .length,
-        confirmed_bookings: userBookings.filter((b) => b.status === "confirmed")
-          .length,
-        total_spent: userBookings
+        total_spent: bookings
           .filter((b) => b.status !== "cancelled")
           .reduce((total, booking) => {
-            const product = data.products.find(
-              (p) => p.id === booking.product_id
-            );
+            const product = products.find((p) => p.id === booking.product_id);
             if (product) {
               const startDate = new Date(booking.start_date);
               const endDate = new Date(booking.end_date);
@@ -274,13 +273,11 @@ const AdminApiService = {
           }, 0),
       };
 
-      const recentBookings = userBookings
+      const recentBookings = bookings
         .sort((a, b) => new Date(b.booking_date) - new Date(a.booking_date))
         .slice(0, 5)
         .map((booking) => {
-          const product = data.products.find(
-            (p) => p.id === booking.product_id
-          );
+          const product = products.find((p) => p.id === booking.product_id);
           return {
             ...booking,
             product_name: product ? product.name : "Unknown Product",
@@ -298,15 +295,14 @@ const AdminApiService = {
     updateStatus: async (userId, newStatus) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const userIndex = data.users.findIndex((u) => u.id === parseInt(userId));
-      if (userIndex === -1) {
+      const updatedUser = localStorageDB.updateItem("users", userId, {
+        status: newStatus,
+        updated_at: localStorageDB.getTimestamp(),
+      });
+
+      if (!updatedUser) {
         throw new Error("User not found");
       }
-
-      const updatedUser = {
-        ...data.users[userIndex],
-        status: newStatus,
-      };
 
       return updatedUser;
     },
@@ -320,7 +316,7 @@ const AdminApiService = {
         products: data.products || 0,
         bookings: data.bookings || 0,
         users: data.users || 0,
-        exported_at: new Date().toISOString(),
+        exported_at: localStorageDB.getTimestamp(),
         report_type: "summary",
         generated_by: "admin",
       };

@@ -1,19 +1,19 @@
-import data from "../staticDB/data.json";
+import localStorageDB from "../staticDB/LocalStorageDB";
 
 /**
  * A service to handle API calls
- * Currently using static data but structured to easily switch to MongoDB later
+ * Using LocalStorageDB for data persistence
  */
 const ApiService = {
   products: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.products];
+      return localStorageDB.getCollection("products");
     },
 
     getById: async (id) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const product = data.products.find((p) => p.id === parseInt(id));
+      const product = localStorageDB.getItem("products", id);
       if (!product) {
         throw new Error("Product not found");
       }
@@ -24,18 +24,18 @@ const ApiService = {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       const newProduct = {
-        id: data.products.length + 1,
         ...productData,
-        created_at: new Date().toISOString(),
+        created_at: localStorageDB.getTimestamp(),
       };
 
-      console.log("Creating new product:", newProduct);
-      return newProduct;
+      const savedProduct = localStorageDB.addItem("products", newProduct);
+      console.log("Creating new product:", savedProduct);
+      return savedProduct;
     },
 
     getForRental: async (id) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const product = data.products.find((p) => p.id === parseInt(id));
+      const product = localStorageDB.getItem("products", id);
       if (!product) {
         throw new Error("Product not found");
       }
@@ -50,12 +50,13 @@ const ApiService = {
   bookings: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.bookings];
+      return localStorageDB.getCollection("bookings");
     },
 
     getByUserId: async (userId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      return data.bookings.filter(
+      return localStorageDB.filterCollection(
+        "bookings",
         (booking) => booking.user_id === parseInt(userId)
       );
     },
@@ -64,38 +65,44 @@ const ApiService = {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       const newBooking = {
-        id: data.bookings.length + 1,
         ...bookingData,
-        booking_date: new Date().toISOString().replace("T", " ").split(".")[0],
+        booking_date: localStorageDB.getTimestamp(),
         status: "pending",
       };
 
-      console.log("Creating new booking:", newBooking);
+      const savedBooking = localStorageDB.addItem("bookings", newBooking);
+      console.log("Creating new booking:", savedBooking);
 
+      // Create notification for the new booking
+      const product = localStorageDB.getItem(
+        "products",
+        savedBooking.product_id
+      );
       await ApiService.notifications.create({
-        user_id: newBooking.user_id,
-        booking_id: newBooking.id,
-        message: `Your booking for ${
-          data.products.find((p) => p.id === newBooking.product_id)?.name
-        } is pending payment. Please complete payment to confirm your booking.`,
+        user_id: savedBooking.user_id,
+        booking_id: savedBooking.id,
+        message: `Your booking for ${product?.name} is pending payment. Please complete payment to confirm your booking.`,
         type: "payment_reminder",
       });
 
-      return newBooking;
+      return savedBooking;
     },
 
     updateStatus: async (bookingId, newStatus, paymentCompleted = false) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const booking = data.bookings.find((b) => b.id === parseInt(bookingId));
+      const booking = localStorageDB.getItem("bookings", bookingId);
       if (!booking) {
         throw new Error("Booking not found");
       }
 
       const oldStatus = booking.status;
-      booking.status = newStatus;
+      const updatedBooking = localStorageDB.updateItem("bookings", bookingId, {
+        status: newStatus,
+        updated_at: localStorageDB.getTimestamp(),
+      });
 
-      const product = data.products.find((p) => p.id === booking.product_id);
+      const product = localStorageDB.getItem("products", booking.product_id);
 
       if (
         oldStatus === "pending" &&
@@ -133,12 +140,12 @@ const ApiService = {
         }, 1000);
       }
 
-      return booking;
+      return updatedBooking;
     },
 
     getById: async (bookingId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const booking = data.bookings.find((b) => b.id === parseInt(bookingId));
+      const booking = localStorageDB.getItem("bookings", bookingId);
       if (!booking) {
         throw new Error("Booking not found");
       }
@@ -150,7 +157,8 @@ const ApiService = {
     login: async (email, password) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const user = data.users.find(
+      const users = localStorageDB.getCollection("users");
+      const user = users.find(
         (u) => u.email === email && u.password === password
       );
 
@@ -165,27 +173,30 @@ const ApiService = {
     register: async (userData) => {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      const existingUser = data.users.find((u) => u.email === userData.email);
+      const users = localStorageDB.getCollection("users");
+      const existingUser = users.find((u) => u.email === userData.email);
       if (existingUser) {
         throw new Error("Email already in use");
       }
 
-      const newUser = {
-        id: data.users.length + 1,
+      const newUserData = {
         ...userData,
-        created_at: new Date().toISOString(),
+        created_at: localStorageDB.getTimestamp(),
+        updated_at: localStorageDB.getTimestamp(),
+        role: "user",
       };
 
-      console.log("Registering new user:", newUser);
+      const savedUser = localStorageDB.addItem("users", newUserData);
+      console.log("Registering new user:", savedUser);
 
-      const { password: _, ...userWithoutPassword } = newUser;
+      const { password: _, ...userWithoutPassword } = savedUser;
       return userWithoutPassword;
     },
 
     getProfile: async (userId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const user = data.users.find((u) => u.id === parseInt(userId));
+      const user = localStorageDB.getItem("users", userId);
       if (!user) {
         throw new Error("User not found");
       }
@@ -197,16 +208,17 @@ const ApiService = {
     updateProfile: async (userId, userData) => {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      const userIndex = data.users.findIndex((u) => u.id === parseInt(userId));
-      if (userIndex === -1) {
+      const { role, ...updateData } = userData;
+      updateData.updated_at = localStorageDB.getTimestamp();
+
+      const updatedUser = localStorageDB.updateItem(
+        "users",
+        userId,
+        updateData
+      );
+      if (!updatedUser) {
         throw new Error("User not found");
       }
-
-      const updatedUser = {
-        ...data.users[userIndex],
-        ...userData,
-        id: parseInt(userId),
-      };
 
       console.log("Updating user:", updatedUser);
 
@@ -216,19 +228,20 @@ const ApiService = {
 
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.users];
+      return localStorageDB.getCollection("users");
     },
   },
 
   reviews: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.reviews];
+      return localStorageDB.getCollection("reviews");
     },
 
     getByProductId: async (productId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      return data.reviews.filter(
+      return localStorageDB.filterCollection(
+        "reviews",
         (review) => review.product_id === parseInt(productId)
       );
     },
@@ -237,64 +250,82 @@ const ApiService = {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       const newReview = {
-        id: data.reviews.length + 1,
         ...reviewData,
-        created_at: new Date().toISOString(),
+        created_at: localStorageDB.getTimestamp(),
       };
 
-      console.log("Creating new review:", newReview);
-      return newReview;
+      const savedReview = localStorageDB.addItem("reviews", newReview);
+      console.log("Creating new review:", savedReview);
+
+      // Create acknowledgment notification
+      await ApiService.notifications.create({
+        user_id: reviewData.user_id,
+        booking_id: reviewData.booking_id,
+        message: `Thank you for your review. Your feedback helps other users!`,
+        type: "review_acknowledgement",
+      });
+
+      return savedReview;
     },
   },
 
   notifications: {
     getAll: async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      return [...data.notifications];
+      return localStorageDB.getCollection("notifications");
     },
 
     getByUserId: async (userId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      return data.notifications.filter(
+      return localStorageDB.filterCollection(
+        "notifications",
         (notification) => notification.user_id === parseInt(userId)
       );
     },
 
     markAsRead: async (notificationId) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const notification = data.notifications.find(
-        (n) => n.id === parseInt(notificationId)
+
+      const updatedNotification = localStorageDB.updateItem(
+        "notifications",
+        notificationId,
+        {
+          is_read: true,
+        }
       );
 
-      if (!notification) {
+      if (!updatedNotification) {
         throw new Error("Notification not found");
       }
 
-      notification.is_read = true;
-      return notification;
+      return updatedNotification;
     },
 
     create: async (notificationData) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const newNotification = {
-        id: data.notifications.length + 1,
         ...notificationData,
         is_read: false,
-        created_at: new Date().toISOString().replace("T", " ").split(".")[0],
+        created_at: localStorageDB.getTimestamp(),
       };
 
-      console.log("Creating new notification:", newNotification);
-      return newNotification;
+      const savedNotification = localStorageDB.addItem(
+        "notifications",
+        newNotification
+      );
+      console.log("Creating new notification:", savedNotification);
+      return savedNotification;
     },
 
     getUnreadCount: async (userId) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
-      const userNotifications = data.notifications.filter(
+      const unreadNotifications = localStorageDB.filterCollection(
+        "notifications",
         (notification) =>
           notification.user_id === parseInt(userId) && !notification.is_read
       );
-      return userNotifications.length;
+      return unreadNotifications.length;
     },
   },
 };
