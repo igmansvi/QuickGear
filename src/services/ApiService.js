@@ -1,9 +1,5 @@
 import localStorageDB from "../staticDB/LocalStorageDB";
 
-/**
- * A service to handle API calls
- * Using LocalStorageDB for data persistence
- */
 const ApiService = {
   products: {
     getAll: async () => {
@@ -73,7 +69,6 @@ const ApiService = {
       const savedBooking = localStorageDB.addItem("bookings", newBooking);
       console.log("Creating new booking:", savedBooking);
 
-      // Create notification for the new booking
       const product = localStorageDB.getItem(
         "products",
         savedBooking.product_id
@@ -257,7 +252,6 @@ const ApiService = {
       const savedReview = localStorageDB.addItem("reviews", newReview);
       console.log("Creating new review:", savedReview);
 
-      // Create acknowledgment notification
       await ApiService.notifications.create({
         user_id: reviewData.user_id,
         booking_id: reviewData.booking_id,
