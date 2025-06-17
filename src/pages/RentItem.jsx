@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import RentForm from "../components/rent/RentForm";
 import RentalSuccessModal from "../components/rent/RentalSuccessModal";
-import ApiService from "../services/apiService";
+import ApiService from "../services/ApiService";
 
 const RentItem = () => {
   const [product, setProduct] = useState(null);

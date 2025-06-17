@@ -203,7 +203,6 @@ const Admin = () => {
         const charts = await AdminApiService.dashboard.getChartData();
         setChartData(charts);
       }
-
     } catch (error) {
       console.error("Error updating booking status:", error);
       addNotification(

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import ApiService from "../../services/apiService";
+import ApiService from "../../services/ApiService";
 
 const RentForm = ({ productId, onSuccess, onError }) => {
   const { user } = useAuth();
