@@ -17,6 +17,7 @@ const UserBookings = ({ bookings, onCancelBooking, onSubmitReview }) => {
     if (selectedBooking) {
       onCancelBooking(selectedBooking.id);
       setShowCancelModal(false);
+      setSelectedBooking(null);
     }
   };
 
@@ -34,6 +35,7 @@ const UserBookings = ({ bookings, onCancelBooking, onSubmitReview }) => {
         reviewText,
       });
       setShowReviewModal(false);
+      setSelectedBooking(null);
     }
   };
 

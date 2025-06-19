@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useBookings } from "../context/BookingContext";
 import { useProducts } from "../context/ProductContext";
+import { useReviews } from "../context/ReviewContext";
 import ProfileForm from "../components/profile/ProfileForm";
 import UserBookings from "../components/profile/UserBookings";
 import AlertMessage from "../components/profile/AlertMessage";
@@ -11,8 +12,9 @@ const Profile = () => {
   const [userBookings, setUserBookings] = useState([]);
   const [message, setMessage] = useState(null);
   const { user, setUser } = useAuth();
-  const { getUserBookings } = useBookings();
+  const { getUserBookings, cancelBooking } = useBookings();
   const { products } = useProducts();
+  const { createReview, hasUserReviewedProduct } = useReviews();
 
   useEffect(() => {
     if (!user) {
@@ -27,11 +29,15 @@ const Profile = () => {
         product_name: product?.name || "Unknown Product",
         product_image: product?.image || "",
         product_price: product?.price || 0,
-        has_review: false,
+        has_review: hasUserReviewedProduct(
+          user.id,
+          booking.product_id,
+          booking.id
+        ),
       };
     });
     setUserBookings(enrichedBookings);
-  }, [user, products, getUserBookings]);
+  }, [user, products, getUserBookings, hasUserReviewedProduct]);
 
   const handleProfileUpdate = (formData) => {
     setUser({
@@ -48,41 +54,66 @@ const Profile = () => {
     }, 3000);
   };
 
-  const handleCancelBooking = (bookingId) => {
-    const updatedBookings = userBookings.map((booking) => {
-      if (booking.id === bookingId) {
-        return { ...booking, status: "cancelled" };
-      }
-      return booking;
-    });
-    setUserBookings(updatedBookings);
-    setMessage({
-      type: "success",
-      text: "Booking cancelled successfully",
-    });
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      await cancelBooking(bookingId);
 
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
+      const updatedBookings = userBookings.map((booking) => {
+        if (booking.id === bookingId) {
+          return { ...booking, status: "cancelled" };
+        }
+        return booking;
+      });
+      setUserBookings(updatedBookings);
+
+      setMessage({
+        type: "success",
+        text: "Booking cancelled successfully",
+      });
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: `Failed to cancel booking: ${error.message}`,
+      });
+    } finally {
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    }
   };
 
-  const handleSubmitReview = (reviewData) => {
-    const updatedBookings = userBookings.map((booking) => {
-      if (booking.id === reviewData.bookingId) {
-        return { ...booking, has_review: true };
-      }
-      return booking;
-    });
+  const handleSubmitReview = async (reviewData) => {
+    try {
+      await createReview({
+        userId: user.id,
+        productId: reviewData.productId,
+        bookingId: reviewData.bookingId,
+        rating: reviewData.rating,
+        reviewText: reviewData.reviewText,
+      });
 
-    setUserBookings(updatedBookings);
-    setMessage({
-      type: "success",
-      text: "Review submitted successfully",
-    });
+      const updatedBookings = userBookings.map((booking) => {
+        if (booking.id === reviewData.bookingId) {
+          return { ...booking, has_review: true };
+        }
+        return booking;
+      });
+      setUserBookings(updatedBookings);
 
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
+      setMessage({
+        type: "success",
+        text: "Review submitted successfully",
+      });
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: `Failed to submit review: ${error.message}`,
+      });
+    } finally {
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    }
   };
 
   if (!user) {

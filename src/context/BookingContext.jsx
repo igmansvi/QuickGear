@@ -55,6 +55,29 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
+  const cancelBooking = async (bookingId) => {
+    try {
+      setLoading(true);
+      const updatedBooking = await ApiService.bookings.updateStatus(
+        bookingId,
+        "cancelled"
+      );
+
+      setBookings((prevBookings) =>
+        prevBookings.map((b) =>
+          b.id === parseInt(bookingId) ? updatedBooking : b
+        )
+      );
+
+      return updatedBooking;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const confirmBooking = async (bookingId) => {
     try {
       setLoading(true);
@@ -69,12 +92,11 @@ export const BookingProvider = ({ children }) => {
         throw new Error("Product not found");
       }
 
-      const updatedBooking = {
-        ...booking,
-        status: "confirmed",
-      };
-
-      console.log("Confirming booking:", updatedBooking);
+      const updatedBooking = await ApiService.bookings.updateStatus(
+        bookingId,
+        "confirmed",
+        true
+      );
 
       setBookings((prevBookings) =>
         prevBookings.map((b) =>
@@ -102,9 +124,12 @@ export const BookingProvider = ({ children }) => {
     getUserBookings,
     createBooking,
     confirmBooking,
+    cancelBooking,
   };
 
   return (
     <BookingContext.Provider value={value}>{children}</BookingContext.Provider>
   );
 };
+
+export default BookingContext;

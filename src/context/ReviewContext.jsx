@@ -63,11 +63,45 @@ export const ReviewProvider = ({ children }) => {
     }
   };
 
+  const createReview = async (reviewData) => {
+    try {
+      setLoading(true);
+      const newReview = await ApiService.reviews.create({
+        user_id: reviewData.userId,
+        product_id: reviewData.productId,
+        booking_id: reviewData.bookingId,
+        rating: reviewData.rating,
+        comment: reviewData.reviewText,
+      });
+
+      setReviews((prevReviews) => [...prevReviews, newReview]);
+      return newReview;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hasUserReviewedProduct = (userId, productId, bookingId) => {
+    if (!reviews || reviews.length === 0) return false;
+
+    return reviews.some(
+      (review) =>
+        review.user_id === userId &&
+        review.product_id === productId &&
+        (bookingId ? review.booking_id === bookingId : true)
+    );
+  };
+
   const value = {
     reviews,
     loading,
     error,
     getProductReviews,
+    createReview,
+    hasUserReviewedProduct,
   };
 
   return (

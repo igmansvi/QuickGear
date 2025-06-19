@@ -65,9 +65,11 @@ const BookingItem = ({ booking, onCancel, onReview }) => {
     }
   };
 
-  const statusClass = `flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[${getStatusColor(
-    booking.status
-  )}] text-white`;
+  const getStatusStyle = (status) => {
+    return {
+      backgroundColor: getStatusColor(status),
+    };
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
@@ -85,7 +87,10 @@ const BookingItem = ({ booking, onCancel, onReview }) => {
             <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
               {booking.product_name}
             </h3>
-            <span className={statusClass}>
+            <span
+              className="flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
+              style={getStatusStyle(booking.status)}
+            >
               <i className={`fas fa-${getStatusIcon(booking.status)} mr-1`}></i>
               {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
             </span>
