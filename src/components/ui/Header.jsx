@@ -164,7 +164,7 @@ const Header = () => {
             )}
 
             {isAuthenticated && (
-              <div className="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 scale-0 origin-top transition-all duration-300 group-hover:scale-100">
+              <div className="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 scale-0 origin-top transition-all duration-300 group-hover:scale-100 md:group-hover:scale-100 group-focus-within:scale-100">
                 <Link
                   to="/list-item"
                   className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200 flex items-center"
@@ -194,7 +194,6 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Render the notification modal */}
       <NotificationModal />
     </>
   );
